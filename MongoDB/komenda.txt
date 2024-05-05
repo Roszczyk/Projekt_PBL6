@@ -1,0 +1,1 @@
+docker run --network="host" --rm --name mongodb -d -p 27017:27017 mongodb/mongodb-community-server
