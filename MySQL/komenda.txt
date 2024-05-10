@@ -1,1 +1,4 @@
-docker run --network="host" --rm --name=mysql1 -d mysql/mysql-server
+docker run --network="host" \
+--rm --name=mysql1 \
+-e MYSQL_ROOT_PASSWORD=password \
+-d mysql/mysql-server
