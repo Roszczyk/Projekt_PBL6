@@ -1,3 +1,6 @@
+# MobileApi
+# Author: PAM
+
 import requests
 from datetime import datetime
 from time import time
@@ -103,7 +106,7 @@ def get_hives(user_id):
                         type: string
                         description: The error message.
     """
-    user_hives = mongo.db.users.find_one({"user_id": user_id})
+    user_hives = mongo.db.hives.find_one({"user_id": user_id})
 
     if user_hives:
         return jsonify(user_hives)
