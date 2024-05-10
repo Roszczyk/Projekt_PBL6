@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_swagger import swagger
 from flask_swagger_ui import get_swaggerui_blueprint
 import random
@@ -65,6 +65,13 @@ def get_sensors():
                     heating:
                         type: boolean
     """
+
+    # Print the entire GET request
+    print("GET Request Path:", request.path)
+    print("GET Request Headers:")
+    for header in request.headers:
+        print(f"{header[0]}: {header[1]}")
+
     result = {
         'temperature': random.uniform(-10, 40),  # Random temperature between -10 and 40 Celsius
         'humidity': random.uniform(0, 100),     # Random humidity between 0% and 100%
