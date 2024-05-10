@@ -9,6 +9,7 @@ app = Flask(__name__)
 
 class CustomBasicAuth(BasicAuth):
     def check_credentials(self, username, password):
+        print(f"Username: {username}, Password: {password}")
         return (username == 'admin' or username == 'username') and (password == 'admin' or password == 'password')
 
 

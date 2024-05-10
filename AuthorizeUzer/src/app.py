@@ -6,9 +6,9 @@ app = Flask(__name__)
 
 # Database configuration
 db_config = {
-    'host': 'your_mysql_host',
-    'user': 'your_mysql_user',
-    'password': 'your_mysql_password',
+    'host': '10.141.10.69',
+    'user': 'root',
+    'password': 'J3s9#cR2_9eBuQ50@Zu;/5.5Pea@@Rqm',
     'database': 'users_db'
 }
 
