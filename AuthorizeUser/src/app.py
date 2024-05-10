@@ -7,9 +7,10 @@ app = Flask(__name__)
 # Database configuration
 db_config = {
     'host': '10.141.10.69',
+    'port': '3333',
     'user': 'root',
-    'password': 'J3s9#cR2_9eBuQ50@Zu;/5.5Pea@@Rqm',
-    'database': 'users_db'
+    'password': 'password',
+    'database': 'mysql'
 }
 
 
@@ -66,4 +67,4 @@ def check_credentials():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5001)

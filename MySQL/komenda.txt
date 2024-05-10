@@ -1,4 +1,4 @@
-docker run --network="host" \
---rm --name=mysql1 \
+docker run -p 3333:3306 \
+--rm --name=mariadb \
 -e MYSQL_ROOT_PASSWORD=password \
--d mysql/mysql-server
+-d mariadb

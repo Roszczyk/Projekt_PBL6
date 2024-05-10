@@ -1,3 +1,4 @@
+import requests
 from datetime import datetime
 from time import time
 from distutils.util import strtobool
@@ -20,11 +21,24 @@ API_URL = '/swagger.json'
 
 
 class CustomBasicAuth(BasicAuth):
+    def __init__(self, app, auth_service_url):
+        super().__init__(app)
+        self.auth_service_url = auth_service_url
+
     def check_credentials(self, username, password):
-        return (username == 'admin' or username == 'username') and (password == 'admin' or password == 'password')
+        data = {'username': username, 'password': password}
+        response = requests.post(self.auth_service_url + '/check_credentials', data=data)
+        if response.status_code == 200:
+            return response.json()['valid']
+        return False
+
+    # FUNKCJA DO TESTÓW
+    # def check_credentials(self, username, password):
+    #     return (username == 'admin' and password == 'admin') or (username == 'username' and password == 'password')
 
 
-custom_basic_auth = CustomBasicAuth(app)
+auth_service_url = 'http://localhost:5001'
+custom_basic_auth = CustomBasicAuth(app, auth_service_url)
 
 
 class Command:
