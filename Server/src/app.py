@@ -13,10 +13,16 @@ from time import time
 from distutils.util import strtobool
 from collections import defaultdict
 
+from flask import Flask, request, jsonify
+from flask_swagger import swagger
+from flask_swagger_ui import get_swaggerui_blueprint
+from flask_pymongo import PyMongo
+from datetime import datetime, timedelta
+from bson.objectid import ObjectId
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
-db = SQLAlchemy(app)
+app.config['MONGO_URI'] = 'mongodb://10.141.10.69:27017/data_db'
+mongo = PyMongo(app)
 
 
 class Device_EUI(db.Model):
@@ -39,18 +45,14 @@ class Data(db.Model):
     digital_in = db.Column(db.Boolean, nullable=True)
 
 
-def payload2db(payload: str, session=db.session):
+def payload2db(payload: str):
     payload = json.loads(payload)
 
     default_dict = defaultdict(lambda: None, payload['uplink_message']['decoded_payload'])
 
     print("Default dict: ", default_dict)
 
-    dev_eui = payload["end_device_ids"]['dev_eui']
-    # # timestamp = datetime.fromisoformat(payload['received_at'])
-    # if payload['received_at'][-1] == 'Z':
-    #     payload['received_at'] = payload['received_at'][:-1]
-    # timestamp = datetime.strptime(payload['received_at'], '%Y-%m-%dT%H:%M:%S.%f')
+    dev_eui = payload['dev_eui']
     timestamp = datetime.now()
 
     temperature = default_dict['temperature_0']
@@ -59,25 +61,9 @@ def payload2db(payload: str, session=db.session):
     gps_lat = default_dict['gps_0']['latitude'] if default_dict['gps_0'] else None
     gps_lon = default_dict['gps_0']['longitude'] if default_dict['gps_0'] else None
 
-    noise = None
-    activity = None
-
-    if default_dict['presence_0'] == 0xFF:
-        noise = True
-        activity = True
-    if default_dict['presence_0'] == 0xF0:
-        noise = True
-        activity = False
-    if default_dict['presence_0'] == 0x0F:
-        noise = False
-        activity = True
-    if default_dict['presence_0'] == 0x01:
-        noise = False
-        activity = False
-
-    # noise = default_dict['digital_in_1']
-    # activity = default_dict['presence_0']
     digital_in = default_dict['digital_in_0']
+    noise = default_dict['digital_in_1']
+    activity = default_dict['digital_in_2']
 
     print("GPS: ", gps_lat, gps_lon, " temp: ", temperature, " hum: ", humidity)
 

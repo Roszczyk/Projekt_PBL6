@@ -15,9 +15,9 @@ def generateFakePayloadTime(session, time="one day") -> dict:
     RAPORT_TIME = 60  # one hour
 
     if time == "one day":
-        time = datetime.utcnow() - timedelta(days=1)
+        time = datetime.now() - timedelta(days=1)
 
-    while time < datetime.utcnow():
+    while time < datetime.now():
         payload = generate_random_payload(time=time)
         app.payload2db(payload, session)
 
