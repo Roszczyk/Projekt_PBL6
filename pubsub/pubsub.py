@@ -46,8 +46,6 @@ def payload_format(payload: str):
     gps_lat = default_dict['gps_0']['latitude'] if default_dict['gps_0'] else None
     gps_lon = default_dict['gps_0']['longitude'] if default_dict['gps_0'] else None
 
-    print(default_dict['presence_0'])
-
     if default_dict['presence_0']=="0xFF":
         noise=True
         activity=True
@@ -87,15 +85,16 @@ def payload_format(payload: str):
 
     return document
 
-def prepare_values():
-    pass
-
-print(prepare_document({"None":"None", "test":"test"}, "Mikołaj"))
-
 payload_str = """{"f_port": 1, "frm_payload": "AGcBEwBoRgCIBcOAGcBDQBoRQ==", 
 "decoded_payload": {"temperature_0": 34.91, "presence_0":"0xFF", "relative_humidity_0": 24.95, "digital_in_1": true, 
 "digital_in_2": true}, "rx_metadata": [{"gateway_ids": {"gateway_id": "test"}, "rssi": 42, "channel_rssi": 42, "snr": 4.2}], 
 "settings": {"data_rate": {"lora": {"bandwidth": 125000, "spreading_factor": 7}}, "frequency": "868000000"}, 
 "dev_EUI": "70B3D57ED0063437", "received_at": "2024-05-10T10:56:38.669"}"""
 
-print(payload_format(payload_str))
+document = payload_format(payload_str)
+
+database_addr = "10.141.10.69:27017"
+add_to_database(document, database_addr, "test", "test")
+downloaded = download_from_database({'time': '2024-05-10 10:56:38'}, database_addr, "test", "test")
+
+print(downloaded)
