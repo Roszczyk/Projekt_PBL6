@@ -1,203 +1,131 @@
-from flask import request
-from flask_swagger import swagger
-from flask_swagger_ui import get_swaggerui_blueprint
-from flask import Flask, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import DECIMAL
+# MobileApi
+# Author: PAM
 
-import paho.mqtt.client as mqtt
-
-from datetime import datetime, timedelta
-import json
+import requests
+from datetime import datetime
 from time import time
 from distutils.util import strtobool
-from collections import defaultdict
 
 from flask import Flask, request, jsonify
 from flask_swagger import swagger
 from flask_swagger_ui import get_swaggerui_blueprint
 from flask_pymongo import PyMongo
-from datetime import datetime, timedelta
-from bson.objectid import ObjectId
+from flask_basicauth import BasicAuth
 
 app = Flask(__name__)
 app.config['MONGO_URI'] = 'mongodb://10.141.10.69:27017/data_db'
 mongo = PyMongo(app)
 
+EXIST = {"$exists": True}
+DESC = [("timestamp", -1)]
 
-class Device_EUI(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    dev_eui = db.Column(db.String, unique=True)
-
-
-class Data(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    device_id = db.Column(db.Integer, db.ForeignKey('device_eui.id'))
-    device = db.relationship('Device_EUI')
-
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-    temperature = db.Column(DECIMAL(precision=4, scale=1), nullable=True)
-    humidity = db.Column(DECIMAL(precision=4, scale=1), nullable=True)
-    gps_lat = db.Column(DECIMAL(precision=7, scale=4), nullable=True)
-    gps_lon = db.Column(DECIMAL(precision=7, scale=4), nullable=True)
-    noise = db.Column(db.Boolean, nullable=True)
-    activity = db.Column(db.Boolean, nullable=True)
-    digital_in = db.Column(db.Boolean, nullable=True)
+SWAGGER_URL = '/swagger'
+API_URL = '/swagger.json'
 
 
-def payload2db(payload: str):
-    payload = json.loads(payload)
+class CustomBasicAuth(BasicAuth):
+    def __init__(self, app, auth_service_url):
+        super().__init__(app)
+        self.auth_service_url = auth_service_url
 
-    default_dict = defaultdict(lambda: None, payload['uplink_message']['decoded_payload'])
+    def check_credentials(self, username, password):
+        data = {'username': username, 'password': password}
+        response = requests.post(self.auth_service_url + '/check_credentials', data=data)
+        if response.status_code == 200:
+            return response.json()['valid']
+        return False
 
-    print("Default dict: ", default_dict)
-
-    dev_eui = payload['dev_eui']
-    timestamp = datetime.now()
-
-    temperature = default_dict['temperature_0']
-    humidity = default_dict['relative_humidity_0']
-
-    gps_lat = default_dict['gps_0']['latitude'] if default_dict['gps_0'] else None
-    gps_lon = default_dict['gps_0']['longitude'] if default_dict['gps_0'] else None
-
-    digital_in = default_dict['digital_in_0']
-    noise = default_dict['digital_in_1']
-    activity = default_dict['digital_in_2']
-
-    print("GPS: ", gps_lat, gps_lon, " temp: ", temperature, " hum: ", humidity)
-
-    with app.app_context():
-        # Check if the device already exists in the database
-        device = Device_EUI.query.filter_by(dev_eui=dev_eui).first()
-
-        # If the device doesn't exist, create a new one
-        if device is None:
-            device = Device_EUI(dev_eui=dev_eui)
-            session.add(device)
-            session.commit()
-
-        # Create a new Data object and add it to the database
-        data = Data(device_id=device.id, timestamp=timestamp,
-                    temperature=temperature, humidity=humidity, gps_lat=gps_lat, gps_lon=gps_lon, noise=noise, activity=activity, digital_in=digital_in)
-        session.add(data)
-        session.commit()
+    # FUNKCJA DO TESTÓW
+    # def check_credentials(self, username, password):
+    #     return (username == 'admin' and password == 'admin') or (username == 'username' and password == 'password')
 
 
-def on_message(client, userdata, msg):
-    payload = msg.payload.decode()
-    print(time(), "payload received")
-    payload2db(payload, db.session)
+auth_service_url = 'http://localhost:5001'
+custom_basic_auth = CustomBasicAuth(app, auth_service_url)
 
 
-def on_publish(client, userdata, mid):
-    print(time(), "Message published")
+class Command:
+    def __init__(self, device_id=None, timestamp=None, lights=None, heating=None):
+        self.device_id = device_id
+        self.timestamp = timestamp
+        self.lights = lights
+        self.heating = heating
 
 
-# @app.route('/data/tempHum', methods=['GET'])    # stara wersja
-# def get_tempHum():
-#     """
-#     Get temperature and humidity data for the last 24 hours.
-#     ---
-#     responses:
-#         200:
-#             description: A list of temperature and humidity data.
-#             schema:
-#                 type: array
-#                 items:
-#                     type: object
-#                     properties:
-#                         timestamp:
-#                             type: string
-#                             format: date-time
-#                         temperature:
-#                             type: number
-#                         humidity:
-#                             type: number
-#     """
-#     last_24h = datetime.utcnow() - timedelta(hours=24)
-#     data = Data.query.filter(Data.timestamp >= last_24h).all()
-#     if data:
-#         result = [{'timestamp': entry.timestamp, 'temperature': entry.temperature, 'humidity': entry.humidity}
-#                   for entry in data]
-#         print(time(), result[:5])
-#         return jsonify(result)
-#     else:
-#         return jsonify({'message': 'No data available.'}), 204
+class SensorData:
+    def __init__(self, device_id=None, timestamp=None, temperature=None, humidity=None, gps_lat=None, gps_lon=None, digital_in=None, noise=None, activity=None, lights=None, heating=None):
+        self.device_id = device_id
+        self.timestamp = timestamp
+        self.temperature = temperature
+        self.humidity = humidity
+        self.gps_lat = gps_lat
+        self.gps_lon = gps_lon
+        self.digital_in = digital_in
+        self.noise = noise
+        self.activity = activity
+        self.lights = lights
+        self.heating = heating
 
 
-@app.route('/data/temp-hum', methods=['GET'])
-def get_temp_hum():
+class UserHives:
+    def __init__(self, user_id=None, hives=[]):
+        self.user_id = user_id
+        self.hives = hives
+
+
+@app.route('/<user_id>/hives', methods=['GET'])
+@custom_basic_auth.required
+def get_hives(user_id):
     """
-    Get temperature and humidity data for the last 24 hours.
+    Get the list of hives for a user.
     ---
+    parameters:
+      - name: user_id
+        in: path
+        description: The user ID.
+        required: true
+        type: string
     responses:
         200:
-            description: A list of temperature and humidity data.
+            description: The list of hives.
             schema:
                 type: object
                 properties:
-                    data:
+                    user_id:
+                        type: string
+                    hives:
                         type: array
                         items:
-                            type: object
-                            properties:
-                                timestamp:
-                                    type: string
-                                    format: date-time
-                                temperature:
-                                    type: number
-                                humidity:
-                                    type: number
-    """
-    last_24h = datetime.utcnow() - timedelta(hours=24)
-    data = Data.query.filter(Data.timestamp >= last_24h).all()
-    result = [{'timestamp': entry.timestamp, 'temperature': entry.temperature, 'humidity': entry.humidity}
-              for entry in data]
-    print(time(), result[:5])
-
-    return jsonify({"data": result})
-
-
-@app.route('/data/temp-hum-chart', methods=['GET'])
-def get_temp_hum_chart():
-    """
-    Get temperature and humidity data for the last 24 hours for usage in chart - HH:mm and only 12 reads.
-    ---
-    responses:
-        200:
-            description: A list of temperature and humidity data.
+                            type: string
+        204:
+            description: No hives found.
             schema:
                 type: object
                 properties:
-                    data:
-                        type: array
-                        items:
-                            type: object
-                            properties:
-                                timestamp:
-                                    type: string
-                                    format: time (HH:mm)
-                                temperature:
-                                    type: number
-                                humidity:
-                                    type: number
+                    message:
+                        type: string
+                        description: The error message.
     """
-    last_24h = datetime.utcnow() - timedelta(hours=24)
-    data = Data.query.filter(Data.timestamp >= last_24h).order_by(
-        Data.timestamp.desc()).all()
-    result = [{'timestamp': entry.timestamp.strftime("%H:%M"), 'temperature': entry.temperature, 'humidity': entry.humidity}
-              for entry in data[:12]]
-    print(time(), result)
+    user_hives = mongo.db.hives.find_one({"user_id": user_id})
 
-    return jsonify({"data": result})
+    if user_hives:
+        return jsonify(user_hives)
+    else:
+        return jsonify({'message': 'No hives found.'}), 204
 
 
-@app.route('/data/sensors', methods=['GET'])
-def get_sensors():
+@app.route('/<device_id>/sensors', methods=['GET'])
+@custom_basic_auth.required
+def get_sensors(device_id):
     """
     Get current GPS location, temperature, humidity and digital input and state of lights, heating.
     ---
+    parameters:
+      - name: device_id
+        in: path
+        description: The device ID.
+        required: true
+        type: string
     responses:
         200:
             description: Current GPS location, temperature and humidity.
@@ -223,45 +151,54 @@ def get_sensors():
                     heating:
                         type: boolean
     """
-    data_tempHum = Data.query.filter(Data.temperature.isnot(
-        None), Data.humidity.isnot(None)).order_by(Data.timestamp.desc()).first()
-    data_gps = Data.query.filter(Data.gps_lat.isnot(None), Data.gps_lon.isnot(
-        None)).order_by(Data.timestamp.desc()).first()
-    data_digital_in = Data.query.filter(Data.digital_in.isnot(
-        None)).order_by(Data.timestamp.desc()).first()
-    data_noise = Data.query.filter(Data.noise.isnot(
-        None)).order_by(Data.timestamp.desc()).first()
 
-    result = {'temperature': None, 'humidity': None,
-              'gps_lat': None, 'gps_lon': None, 'digital_in': None, 'noise': None, 'activity': None}
+    data_tempHum = mongo.db.telemetry.find_one(
+        {"temperature": EXIST, "humidity": EXIST, "device_id": device_id}, sort=DESC)
+    data_gps = mongo.db.telemetry.find_one({"gps_lat": EXIST, "gps_lon": EXIST, "device_id": device_id}, sort=DESC)
+    data_digital_in = mongo.db.telemetry.find_one({"digital_in": EXIST, "device_id": device_id}, sort=DESC)
+    data_noise = mongo.db.telemetry.find_one({"noise": EXIST, "device_id": device_id}, sort=DESC)
+
+    sensor_data = SensorData(device_id=device_id, timestamp=datetime.now())
 
     if data_tempHum:
-        result['temperature'] = data_tempHum.temperature
-        result['humidity'] = data_tempHum.humidity
+        sensor_data.temperature = data_tempHum['temperature']
+        sensor_data.humidity = data_tempHum['humidity']
 
     if data_gps:
-        result['gps_lat'] = data_gps.gps_lat
-        result['gps_lon'] = data_gps.gps_lon
+        sensor_data.gps_lat = data_gps['gps_lat']
+        sensor_data.gps_lon = data_gps['gps_lon']
 
     if data_digital_in:
-        result['digital_in'] = data_digital_in.digital_in
+        sensor_data.digital_in = data_digital_in['digital_in']
 
     if data_noise:
-        result['noise'] = data_noise.noise
-        result['activity'] = data_noise.activity
+        sensor_data.noise = data_noise['noise']
+        sensor_data.activity = data_noise['activity']
 
-    result['lights'] = app.devices['lights']
-    result['heating'] = app.devices['heating']
+    cmd_lights = mongo.db.commands.find_one({"lights": EXIST, "device_id": device_id}, sort=DESC)
+    cmd_heating = mongo.db.commands.find_one({"heating": EXIST, "device_id": device_id}, sort=DESC)
 
-    print(time(), result)
-    return jsonify(result)
+    if cmd_lights:
+        sensor_data.lights = cmd_lights['lights']
+    if cmd_heating:
+        sensor_data.heating = cmd_heating['heating']
+
+    print(time(), sensor_data.__dict__)
+    return jsonify(sensor_data.__dict__)
 
 
-@app.route('/data/gps', methods=['GET'])
-def get_gps():
+@app.route('/<device_id>/gps', methods=['GET'])
+@custom_basic_auth.required
+def get_gps(device_id):
     """
     Get current GPS location.
     ---
+    parameters:
+      - name: device_id
+        in: path
+        description: The device ID.
+        required: true
+        type: string
     responses:
         200:
             description: Current GPS location.
@@ -275,26 +212,41 @@ def get_gps():
                         type: number
                     gps_lon:
                         type: number
+        204:
+            description: No GPS location available.
+            schema:
+                type: object
+                properties:
+                    message:
+                        type: string
+                        description: The error message.
     """
-    data = Data.query.filter(Data.gps_lat.isnot(None), Data.gps_lon.isnot(
-        None)).order_by(Data.timestamp.desc()).first()
+    sensor_data = SensorData(device_id=device_id, timestamp=datetime.now())
+
+    data = mongo.db.telemetry.find_one({"gps_lat": EXIST, "gps_lon": EXIST, "device_id": device_id}, sort=DESC)
 
     if data:
-        result = {'timestamp': data.timestamp,
-                  'gps_lat': data.gps_lat, 'gps_lon': data.gps_lon}
-        print(time(), result)
-        return jsonify(result)
+        sensor_data.gps_lat = data['gps_lat']
+        sensor_data.gps_lon = data['gps_lon']
+        print(time(), sensor_data.__dict__)
+        return jsonify(sensor_data.__dict__)
     else:
         return jsonify({'message': 'No GPS location available.'}), 204
 
 
-@app.route('/data/<path>', methods=['POST'])
-def post_data(path):
+@app.route('/<device_id>/<cmd>', methods=['POST'])
+@custom_basic_auth.required
+def post_data(device_id, cmd):
     """
     Publishes lights/ heating boolean value to the MQTT broker.
     ---
     parameters:
-      - name: path
+      - name: device_id
+        in: path
+        description: The device ID.
+        required: true
+        type: string
+      - name: cmd
         in: path
         description: The path to publish the data to.
         required: true
@@ -323,7 +275,7 @@ def post_data(path):
                         type: string
                         description: The error message.
     """
-    if path not in app.devices:
+    if cmd not in ('lights', 'heating'):
         return jsonify({'message': 'Invalid path.'}), 400
 
     value = request.args.get('value')
@@ -336,71 +288,23 @@ def post_data(path):
     except ValueError:
         return jsonify({'message': 'Invalid value. A boolean is required.'}), 400
 
-    if value == app.devices[path]:
+    last_value = mongo.db.commands.find_one({cmd: EXIST, "device_id": device_id}, sort=DESC)
+    if value == last_value:
         return jsonify({'message': 'Data already up to date.'}), 200
 
-    app.devices[path] = value
+    mongo.db.commands.insert_one(Command(device_id=device_id, timestamp=datetime.now(), **{cmd: value}).__dict__)
 
-    # placeholder for proper payload to Helium/TTN
-    payload = {
-        "f_port": 1,
-        "payload": {
-            path: value
-        }
-    }
-
-    payload = "Nothing"
-
-    if path == "heating" and value == True:
-        payload = '{ "downlinks": [{ "f_port": 15, "frm_payload": "SDE=", "priority": "NORMAL" }] }'
-    elif path == "heating" and value == False:
-        payload = '{ "downlinks": [{ "f_port": 15, "frm_payload": "SDA=", "priority": "NORMAL" }] }'
-    elif path == "lights" and value == True:
-        payload = '{ "downlinks": [{ "f_port": 15, "frm_payload": "TDE=", "priority": "NORMAL" }] }'
-    elif path == "lights" and value == False:
-        payload = '{ "downlinks": [{ "f_port": 15, "frm_payload": "TDA=", "priority": "NORMAL" }] }'
-    else:
-        print("Something is no yes")
-
-    print("PAYLOAD TUTAJ !!!!!!!!!!!!!!!!!!!!!1\n", payload, "\n\n")
-
-    client.publish(topic_pub, payload)
+    # POST to PubSub over http
 
     return jsonify({'message': 'Data published successfully.'}), 200
 
 
-@app.route('/swagger.json')
+@app.route(API_URL)
 def swagger_json():
     return jsonify(swagger(app))
 
 
 if __name__ == '__main__':
-
-    with app.app_context():
-        db.create_all()
-
-    app.devices = {'lights': False, 'heating': False}
-
-    client = mqtt.Client()
-    client.on_message = on_message
-    client.on_publish = on_publish
-
-    mqtt_username = "pam-pbl5-app@ttn"
-    device_id = "eui-70b3d57ed0062e09"
-
-    password_mqtt = "NNSXS.AGEJAV36C5MABKJM67MAGQ6G4EZMTL37GPWUOTQ.IIL46KPPV2QZUECWURID2IUEHIV324HLP3NEV6A7OKIRMNY4LMVA"
-
-    client.username_pw_set(mqtt_username, password_mqtt)
-    client.connect("eu1.cloud.thethings.network", 1883)
-    topic_sub = f"v3/{mqtt_username}/devices/{device_id}/up"
-    topic_pub = f"v3/{mqtt_username}/devices/{device_id}/down/push"
-
-    client.subscribe(topic_sub)
-    client.loop_start()
-
-    SWAGGER_URL = '/swagger'
-    API_URL = '/swagger.json'
-
     swaggerui_blueprint = get_swaggerui_blueprint(
         SWAGGER_URL,
         API_URL,
@@ -411,5 +315,4 @@ if __name__ == '__main__':
 
     app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
-    # NAPRAWIONE: debug=False musi być, bo inaczej callbacki mqtt są dwukrotnie.
-    app.run(debug=False)
+    app.run()
