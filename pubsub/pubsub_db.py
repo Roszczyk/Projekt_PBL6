@@ -15,15 +15,6 @@ def download_from_database(key, db_addr, db_base, db_collection):
     collection = database[db_collection]
     return collection.find_one(key)
 
-def prepare_document(data, hive):
-    current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    document = {
-    "date": current_time,
-    "hive": hive,   
-    }
-    if type(data)==dict and len(data)>0:
-        document.update(data)
-    return document
 
 def parse_received_date(date):
     date = date.split("T")

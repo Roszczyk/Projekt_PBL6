@@ -36,3 +36,15 @@ def broker_to_database(topic, broker_ip, broker_port, username, password, db_add
     client.connect(broker_ip, broker_port)
     client.subscribe(topic)
     client.loop_forever()  
+
+def broker_to_database_init(topic, broker_ip, broker_port, username, password, db_addr, db_base, db_collection):
+    client = mqtt.Client()
+    client.on_message = partial(on_message_db, db_addr=db_addr, db_base=db_base, db_collection=db_collection)
+    client.username_pw_set(username, password)
+    client.connect(broker_ip, broker_port)
+    client.subscribe(topic)
+    print("MQTT client initialized")
+    return client
+
+def broker_to_database_loop(client):
+    client.loop_forever()
