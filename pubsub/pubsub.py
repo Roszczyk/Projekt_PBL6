@@ -1,6 +1,6 @@
 from pubsub_db import payload_format, add_to_database, download_from_database
 from pubsub_broker import broker_to_database, broker_to_database_init, broker_to_database_loop
-from pubsub_http import start_server, server_to_database, server_to_database_init, server_to_database_loop
+from pubsub_http import start_server, server_to_broker, server_to_broker_init, server_to_broker_loop
 import time
 from threading import Thread
 import signal
@@ -28,12 +28,13 @@ if __name__ == "__main__":
 
     mqtt_user = "rw"
     mqtt_password = "readwrite"
-    mqtt_topic = "PAM-PBL5-CATCHER"
+    mqtt_listen_topic = "PAM-PBL5-CATCHER"
+    mqtt_publish_topic = "PAM-PBL6-PUB"
 
-    httpd = server_to_database_init(http_port, database_addr, database_base, database_collection)
-    client = broker_to_database_init(mqtt_topic, broker_addr["ip"], broker_addr["port"], mqtt_user, mqtt_password, database_addr, database_base, database_collection)
+    httpd = server_to_broker_init(http_port, mqtt_publish_topic, broker_addr["ip"], broker_addr["port"], mqtt_user, mqtt_password)
+    client = broker_to_database_init(mqtt_listen_topic, broker_addr["ip"], broker_addr["port"], mqtt_user, mqtt_password, database_addr, database_base, database_collection)
 
-    mqtt_thread = Thread(target = server_to_database_loop, args = (httpd,), daemon=True)
+    mqtt_thread = Thread(target = server_to_broker_loop, args = (httpd,), daemon=True)
     http_thread = Thread(target = broker_to_database_loop, args = (client,), daemon=True)
 
     mqtt_thread.start()

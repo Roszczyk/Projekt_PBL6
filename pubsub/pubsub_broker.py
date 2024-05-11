@@ -5,7 +5,7 @@ import time
 
 def on_message_db(client, userdata, message, db_addr, db_base, db_collection):
     print(f"received message: \n{message.payload}")
-    formated_message = payload_format(message.payload)
+    formated_message = payload_format(f"""{message.payload}""")
     print(f"formated message: \n{formated_message}")
     add_to_database(formated_message, db_addr, db_base, db_collection)
 
@@ -17,7 +17,6 @@ def broker_publish(message, topic, broker_ip, broker_port, username, password):
     client.username_pw_set(username, password)
     client.connect(broker_ip, broker_port)
     time.sleep(2)
-    message = 'catch me'
     client.publish(topic, message)
     client.disconnect()
 

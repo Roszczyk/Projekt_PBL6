@@ -2,9 +2,10 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse, parse_qs
 from collections import defaultdict
 from pubsub_db import add_to_database, download_from_database
+from pubsub_broker import broker_publish
 import time
 
-def prepare_command_for_database(payload):
+def prepare_command_for_broker(payload):
     document = dict()
     payload = defaultdict(lambda: None, payload)
     time = payload['timestamp'][0].split(".")[0]
@@ -13,13 +14,15 @@ def prepare_command_for_database(payload):
         document.update({"lights" : payload['lights'][0]})
     if payload['heating'] != None:
         document.update({"heating" : payload['heating'][0]})
-    return document
+    return str(document)
 
-class PostHandlerDatabase(BaseHTTPRequestHandler):
-    def __init__(self, request, client_address, server, db_addr, db_base, db_collection):
-        self.db_addr = db_addr
-        self.db_base = db_base
-        self.db_collection = db_collection
+class PostHandlerBroker(BaseHTTPRequestHandler):
+    def __init__(self, request, client_address, server, topic, broker_ip, broker_port, username, password):
+        self.topic = topic
+        self.broker_ip = broker_ip
+        self.broker_port = broker_port
+        self.username = username
+        self.password = password
         super().__init__(request, client_address, server)
 
     def do_POST(self):
@@ -31,9 +34,9 @@ class PostHandlerDatabase(BaseHTTPRequestHandler):
         self.send_header('Content-type', 'text/html')
         self.end_headers()
         self.wfile.write(b'POST request received')
-        document = prepare_command_for_database(parsed_data)
+        document = prepare_command_for_broker(parsed_data)
         print(document)
-        add_to_database(document, self.db_addr, self.db_base, self.db_collection)
+        broker_publish(document, self.topic, self.broker_ip, self.broker_port, self.username, self.password)
 
 class PostHandler(BaseHTTPRequestHandler):
     def do_POST(self):
@@ -54,17 +57,17 @@ def start_server(port):
     print('Server running on port', port)
     httpd.serve_forever()
 
-def server_to_database_init(port, db_addr, db_base, db_collection):
+def server_to_broker_init(port, topic, broker_ip, broker_port, username, password):
     server_address = ('', port)
-    httpd = HTTPServer(server_address, lambda request, client_address, server: PostHandlerDatabase(request, client_address, server, db_addr, db_base, db_collection))
+    httpd = HTTPServer(server_address, lambda request, client_address, server: PostHandlerBroker(request, client_address, server, topic, broker_ip, broker_port, username, password))
     print('Server running on port', port)
     return httpd
 
-def server_to_database_loop(httpd):
+def server_to_broker_loop(httpd):
     httpd.serve_forever()
 
-def server_to_database(port, db_addr, db_base, db_collection):   
+def server_to_broker(port, topic, broker_ip, broker_port, username, password):   
     server_address = ('', port)
-    httpd = HTTPServer(server_address, lambda request, client_address, server: PostHandlerDatabase(request, client_address, server, db_addr, db_base, db_collection))
+    httpd = HTTPServer(server_address, lambda request, client_address, server: PostHandlerBroker(request, client_address, server, topic, broker_ip, broker_port, username, password))
     print('Server running on port', port)
     httpd.serve_forever()
