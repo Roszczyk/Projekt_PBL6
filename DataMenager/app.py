@@ -415,6 +415,39 @@ def list_users_route():
         return jsonify({'message': 'No users found.'}), 404
 
 
+@app.route('/get_last_5_detections', methods=['GET'])
+def get_last_5_detections():
+    """
+    Get the last 5 detection records.
+    ---
+    responses:
+        200:
+            description: The list of detection records.
+            schema:
+                type: object
+                properties:
+                    detections:
+                        type: array
+                        items:
+                            type: object
+                            properties:
+                                timestamp:
+                                    type: string
+        404:
+            description: No detection records found.
+            schema:
+                type: object
+                properties:
+                    message:
+                        type: string
+                        description: The error message.
+    """
+    detections = list(mongo.db.hornet.find().sort('_id', -1).limit(5))
+    # Convert ObjectId to string
+    detections_json = json_util.dumps(detections, indent=2)
+    return detections_json, 200
+
+
 @app.route(API_URL)
 def swagger_json():
     return jsonify(swagger(app))
