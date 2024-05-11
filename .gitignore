@@ -3,7 +3,7 @@ __pycache__/
 *.db
 
 *.code-workspace
-Server/test.py
+test.py
 venv/
 .vscode/
 .idea/
