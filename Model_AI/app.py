@@ -3,6 +3,7 @@ import requests
 import time
 import random
 from pymongo import MongoClient
+from datetime import datetime
 
 from flask import Flask
 
@@ -43,7 +44,8 @@ def fetch_save_post_image(collection):
                 print("No hornet detected.")
                 return
 
-            collection.insert_one({"detection": detection})
+            print("Hornet detected!!! . Uploading to the REST endpoint.")
+            collection.insert_one({"timestamp": datetime.now()})
 
             response = requests.post(REST_ENDPOINT)  # POST do mikrousługi powiadomień
 

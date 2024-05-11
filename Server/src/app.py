@@ -135,7 +135,8 @@ def get_hives(user_id):
     user_hives = mongo.db.hives.find_one({"user_id": user_id})
 
     if user_hives:
-        return jsonify(list(user_hives['hives']))
+        connected = ','.join(user_hives['hives'])
+        return jsonify({'hives': connected})
     else:
         return jsonify({'message': 'No hives found.'}), 204
 
