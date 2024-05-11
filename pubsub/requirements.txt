@@ -1,0 +1,10 @@
+# threading
+# signal
+# http
+urllib3
+# collections
+requests
+paho-mqtt
+# json
+# datetime
+pymongo

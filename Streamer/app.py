@@ -1,60 +1,31 @@
 import cv2
 from flask import Flask, Response
-import time
-from threading import Thread
 
 app = Flask(__name__)
 
 
-frame = None
-thread = None
-thread_stop = False
+def capture_frame():
+    cap = cv2.VideoCapture('rtmp://10.141.10.69/live')
 
-STREAM_URL = 'rtmp://127.0.0.1/live'
+    ret, frame = cap.read()
+    if not ret:
+        return None
 
-
-def capture_frames():
-    global frame, thread_stop
-    cap = cv2.VideoCapture(STREAM_URL)
-
-    while not thread_stop:
-        ret, frame = cap.read()
-        if not ret:
-            break
-
-        time.sleep(10)
+    ret, buffer = cv2.imencode('.jpg', frame)
+    frame_jpg = buffer.tobytes()
 
     cap.release()
-
-
-def start_capture():
-    global thread
-    if thread is None:
-        thread = Thread(target=capture_frames)
-        thread.start()
+    return frame_jpg
 
 
 @app.route('/currentframe.jpg')
 def current_frame():
-    return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+    frame = capture_frame()
+    if frame is None:
+        return "Failed to capture frame from stream", 500
 
-
-def generate_frames():
-    global frame
-
-    while True:
-        if frame is not None:
-            ret, buffer = cv2.imencode('.jpg', frame)
-            frame_data = buffer.tobytes()
-            yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + frame_data + b'\r\n')
-
-
-@app.route('/start')
-def start():
-    start_capture()
-    return 'Capture started'
+    return Response(frame, mimetype='image/jpeg')
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5003)
