@@ -1,6 +1,9 @@
 import os
 import requests
 import time
+import random
+from pymongo import MongoClient
+
 from flask import Flask
 
 app = Flask(__name__)
@@ -10,8 +13,12 @@ IMAGE_URL = "http://127.0.0.1:5003/currentframe.jpg"
 SAVE_DIRECTORY = "images/"
 REST_ENDPOINT = "http://your_rest_endpoint.com/upload"
 
+DB_URL = "10.141.10.69:27017"
+DB_NAME = "data_db"
+DB_COLLECTION = "hornet"
 
-def fetch_save_post_image():
+
+def fetch_save_post_image(collection):
     try:
         # Fetch image from URL
         response = requests.get(IMAGE_URL)
@@ -26,23 +33,36 @@ def fetch_save_post_image():
             with open(filename, 'wb') as f:
                 f.write(response.content)
 
-            # POST image to REST endpoint
-            files = {'image': open(filename, 'rb')}
-            response = requests.post(REST_ENDPOINT, files=files)
+            # AI
+            # AI
+            detection = random.randint(0, 1)
+            # AI
+            # AI
 
-            # Check if POST request was successful
+            if not detection:
+                print("No hornet detected.")
+                return
+
+            collection.insert_one({"detection": detection})
+
+            response = requests.post(REST_ENDPOINT)  # POST do mikrousługi powiadomień
+
             if response.status_code == 200:
-                print("Image successfully posted to the REST endpoint.")
+                print("Successfully posted to the REST endpoint.")
             else:
-                print("Failed to post image to the REST endpoint.")
+                print("Failed to post to the REST endpoint.")
 
     except Exception as e:
         print("An error occurred:", str(e))
 
 
 def periodic_task(interval):
+    client = MongoClient(DB_URL)
+    database = client[DB_NAME]
+    collection = database[DB_COLLECTION]
+
     while True:
-        fetch_save_post_image()
+        fetch_save_post_image(collection)
         time.sleep(interval)
 
 
