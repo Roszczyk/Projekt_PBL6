@@ -1,12 +1,13 @@
 # MobileApi
 # Author: PAM
 
+from bson import json_util
 import requests
 from datetime import datetime
 from time import time
 from distutils.util import strtobool
 
-from flask import Flask, request, jsonify
+from flask import Flask, g, request, jsonify
 from flask_swagger import swagger
 from flask_swagger_ui import get_swaggerui_blueprint
 from flask_pymongo import PyMongo
@@ -67,10 +68,34 @@ class SensorData:
         self.heating = heating
 
 
-class UserHives:
-    def __init__(self, user_id=None, hives=[]):
-        self.user_id = user_id
-        self.hives = hives
+# class UserHives:
+#     def __init__(self, user_id=None, hives=[]):
+#         self.user_id = user_id
+#         self.hives = hives
+
+def user_has_access_to_hive(user_id, device_id):
+    user_hives = mongo.db.hives.find_one({"user_id": user_id})
+    if user_hives:
+        return device_id in user_hives.get('hives', [])
+    return False
+
+
+@app.before_request
+def before_request():
+    auth = request.authorization
+    if auth:
+        path_user_id = request.view_args.get('user_id', None)
+        path_device_id = request.view_args.get('device_id', None)
+
+        print('path_user_id:', path_user_id)
+        print('path_device_id:', path_device_id)
+        print('auth.username:', auth.username)
+
+        user_id_ok = path_user_id is None or path_user_id == auth.username
+        path_device_id_ok = path_device_id is None or user_has_access_to_hive(auth.username, path_device_id)
+
+        if not user_id_ok or not path_device_id_ok:
+            return jsonify({'message': 'Unauthorized access to hive.'}), 401
 
 
 @app.route('/<user_id>/hives', methods=['GET'])
@@ -109,7 +134,7 @@ def get_hives(user_id):
     user_hives = mongo.db.hives.find_one({"user_id": user_id})
 
     if user_hives:
-        return jsonify(user_hives)
+        return jsonify(list(user_hives['hives']))
     else:
         return jsonify({'message': 'No hives found.'}), 204
 
@@ -292,7 +317,10 @@ def post_data(device_id, cmd):
     if value == last_value:
         return jsonify({'message': 'Data already up to date.'}), 200
 
-    mongo.db.commands.insert_one(Command(device_id=device_id, timestamp=datetime.now(), **{cmd: value}).__dict__)
+    result_dict = Command(device_id=device_id, timestamp=datetime.now(), **{cmd: value}).__dict__
+    result_dict = {k: v for k, v in result_dict.items() if v is not None}
+
+    mongo.db.commands.insert_one(result_dict)
 
     # POST to PubSub over http
 
@@ -314,5 +342,4 @@ if __name__ == '__main__':
     )
 
     app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
-
-    app.run()
+    app.run(debug=True)
