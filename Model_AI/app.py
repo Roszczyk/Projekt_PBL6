@@ -43,7 +43,7 @@ def fetch_save_post_image(collection):
                 print("No hornet detected.")
                 return
 
-            collection.insert_one({"detection": detection})
+            collection.insert_one({"timestamp": })
 
             response = requests.post(REST_ENDPOINT)  # POST do mikrousługi powiadomień
 
