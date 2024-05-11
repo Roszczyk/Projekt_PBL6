@@ -1,3 +1,4 @@
+from bson import json_util
 from flask import Flask, jsonify, request
 import mysql.connector
 import hashlib
@@ -306,6 +307,80 @@ def get_user_hives_route():
         return jsonify({'user_id': user_id, 'hives': hives})
     else:
         return jsonify({'message': 'No hives found for the user.'}), 404
+
+
+@app.route('/get_hives_collection', methods=['GET'])
+def get_hives_collection():
+    """
+    Get the list of all hives.
+    ---
+    responses:
+        200:
+            description: The list of hives.
+            schema:
+                type: object
+                properties:
+                    hives:
+                        type: array
+                        items:
+                            type: object
+                            properties:
+                                user_id:
+                                    type: string
+                                hives:
+                                    type: array
+                                    items:
+                                        type: string
+        404:
+            description: No hives found.
+            schema:
+                type: object
+                properties:
+                    message:
+                        type: string
+                        description: The error message.
+    """
+    hives = list(mongo.db.hives.find())
+    # Convert ObjectId to string
+    hives_json = json_util.dumps(hives, indent=2)
+    return hives_json, 200
+
+
+@app.route('/get_commands_collection', methods=['GET'])
+def get_commands_collection():
+    """
+    Get the list of all commands.
+    ---
+    responses:
+        200:
+            description: The list of commands.
+            schema:
+                type: object
+                properties:
+                    commands:
+                        type: array
+                        items:
+                            type: object
+                            properties:
+                                command:
+                                    type: string
+                                description:
+                                    type: string
+                                syntax:
+                                    type: string
+        404:
+            description: No commands found.
+            schema:
+                type: object
+                properties:
+                    message:
+                        type: string
+                        description: The error message.
+    """
+    commands = list(mongo.db.commands.find())
+    # Convert ObjectId to string
+    commands_json = json_util.dumps(commands, indent=2)
+    return commands_json, 200
 
 
 @app.route('/list_users', methods=['GET'])
