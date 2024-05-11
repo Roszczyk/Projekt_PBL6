@@ -1,5 +1,6 @@
 from pubsub_db import payload_format, add_to_database, download_from_database
 from pubsub_broker import broker_to_database
+from pubsub_http import start_server
 import time
 
 
@@ -15,3 +16,4 @@ if __name__ == "__main__":
     broker_addr = {"ip":"10.141.10.69", "port":1883}
 
     broker_to_database("PAM-PBL5-CATCHER", broker_addr["ip"], broker_addr["port"], "rw", "readwrite", database_addr, "test", "test")
+    start_server(2137)
