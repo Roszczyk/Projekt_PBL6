@@ -30,7 +30,7 @@ def payload_format(payload: str):
 
     default_dict = defaultdict(lambda: None, payload['decoded_payload'])
 
-    dev_eui = payload['dev_EUI']
+    dev_eui = payload['device_id']
     timestamp = parse_received_date(payload["received_at"])
     temperature = default_dict['temperature_0']
     humidity = default_dict['relative_humidity_0']
