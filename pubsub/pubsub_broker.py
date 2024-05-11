@@ -29,10 +29,10 @@ def broker_subscribe(topic, broker_ip, broker_port, username, password):
     client.subscribe(topic)
     client.loop_forever()
 
-def broker_to_basabase(topic, broker_ip, broker_port, username, password, db_addr, db_base, db_collection):
+def broker_to_database(topic, broker_ip, broker_port, username, password, db_addr, db_base, db_collection):
     client = mqtt.Client()
     client.on_message = partial(on_message_db, db_addr=db_addr, db_base=db_base, db_collection=db_collection)
     client.username_pw_set(username, password)
     client.connect(broker_ip, broker_port)
     client.subscribe(topic)
-    client.loop_forever()   
+    client.loop_forever()  
