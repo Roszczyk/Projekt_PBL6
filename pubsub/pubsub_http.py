@@ -54,6 +54,15 @@ def start_server(port):
     print('Server running on port', port)
     httpd.serve_forever()
 
+def server_to_database_init(port, db_addr, db_base, db_collection):
+    server_address = ('', port)
+    httpd = HTTPServer(server_address, lambda request, client_address, server: PostHandlerDatabase(request, client_address, server, db_addr, db_base, db_collection))
+    print('Server running on port', port)
+    return httpd
+
+def server_to_database_loop(httpd):
+    httpd.serve_forever()
+
 def server_to_database(port, db_addr, db_base, db_collection):   
     server_address = ('', port)
     httpd = HTTPServer(server_address, lambda request, client_address, server: PostHandlerDatabase(request, client_address, server, db_addr, db_base, db_collection))
