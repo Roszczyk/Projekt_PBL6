@@ -1,37 +1,30 @@
 import cv2
 from flask import Flask, Response
-import time
-from threading import Thread
+import numpy as np
 
 app = Flask(__name__)
 
-
-frame = None
-thread = None
-thread_stop = False
-
-STREAM_URL = 'rtmp://127.0.0.1/live'
+# Function to generate frames from the RTMP stream
 
 
-def capture_frames():
-    global frame, thread_stop
-    cap = cv2.VideoCapture(STREAM_URL)
+def generate_frames():
+    # Replace 'rtmp://your_stream_url' with your RTMP stream URL
+    cap = cv2.VideoCapture('rtmp://10.141.10.69/live')
 
-    while not thread_stop:
+    while True:
         ret, frame = cap.read()
         if not ret:
             break
 
-        time.sleep(10)
+        # Encode the frame as JPEG
+        ret, buffer = cv2.imencode('.jpg', frame)
+        frame = buffer.tobytes()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
     cap.release()
 
-
-def start_capture():
-    global thread
-    if thread is None:
-        thread = Thread(target=capture_frames)
-        thread.start()
+# Route to serve the current frame as JPEG
 
 
 @app.route('/currentframe.jpg')
@@ -39,22 +32,5 @@ def current_frame():
     return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
-def generate_frames():
-    global frame
-
-    while True:
-        if frame is not None:
-            ret, buffer = cv2.imencode('.jpg', frame)
-            frame_data = buffer.tobytes()
-            yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + frame_data + b'\r\n')
-
-
-@app.route('/start')
-def start():
-    start_capture()
-    return 'Capture started'
-
-
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5003)
