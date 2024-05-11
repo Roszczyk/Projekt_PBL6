@@ -34,11 +34,6 @@ class PostHandlerDatabase(BaseHTTPRequestHandler):
         document = prepare_command_for_database(parsed_data)
         print(document)
         add_to_database(document, self.db_addr, self.db_base, self.db_collection)
-        time.sleep(2)
-        print(document["timestamp"])
-        print({"timestamp" : document["timestamp"]})
-        downloaded = download_from_database({'timestamp' : f'{document["timestamp"]}'}, self.db_addr, self.db_base, self.db_collection)
-        print(downloaded)
 
 class PostHandler(BaseHTTPRequestHandler):
     def do_POST(self):

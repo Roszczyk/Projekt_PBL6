@@ -15,5 +15,5 @@ if __name__ == "__main__":
     database_addr = "10.141.10.69:27017"
     broker_addr = {"ip":"10.141.10.69", "port":1883}
 
-    # broker_to_database("PAM-PBL5-CATCHER", broker_addr["ip"], broker_addr["port"], "rw", "readwrite", database_addr, "test", "test")
+    broker_to_database("PAM-PBL5-CATCHER", broker_addr["ip"], broker_addr["port"], "rw", "readwrite", database_addr, "test", "test")
     server_to_database(2137, database_addr, "test", "test")
