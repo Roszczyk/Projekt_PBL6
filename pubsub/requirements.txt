@@ -1,9 +1,10 @@
-threading
-signal
-http
-urllib
-collections
+# threading
+# signal
+# http
+urllib3
+# collections
 requests
-paho
-json
-datetime
+paho-mqtt
+# json
+# datetime
+pymongo
