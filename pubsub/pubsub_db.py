@@ -30,7 +30,7 @@ def payload_format(payload: str):
 
     default_dict = defaultdict(lambda: None, payload['decoded_payload'])
 
-    dev_eui = payload['device_id']
+    dev_id = payload['device_id']
     timestamp = parse_received_date(payload["received_at"])
     temperature = default_dict['temperature_0']
     humidity = default_dict['relative_humidity_0']
@@ -58,7 +58,7 @@ def payload_format(payload: str):
     digital_in_1 = default_dict['digital_in_1']
     digital_in_2 = default_dict['digital_in_2']
 
-    document.update({"dev_EUI":dev_eui, "time":timestamp})
+    document.update({"device_id":dev_id, "time":timestamp})
     if temperature != None:
         document.update({"temperature":temperature})
     if humidity != None:
