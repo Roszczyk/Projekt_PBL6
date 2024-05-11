@@ -1,0 +1,4 @@
+ffmpeg -re -nostdin -i ./RTMP/file_example_MP4_1280_10MG.mp4 \
+    -vcodec libx264 -preset:v ultrafast \
+    -acodec aac \
+    -f flv rtmp://127.0.0.1/live
