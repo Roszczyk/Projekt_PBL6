@@ -51,7 +51,7 @@ def generate_random_payload(time="now", dev_eui="70B3D57ED0063437"):
 
     data["decoded_payload"]["temperature_0"] = 34.5 + randomnes(0.5)
     data["decoded_payload"]["relative_humidity_0"] = 25.4 + randomnes(0.5)
-    data["dev_EUI"] = dev_eui
+    data["device_id"] = dev_eui
 
     if time == "now":
         time = datetime.now()
