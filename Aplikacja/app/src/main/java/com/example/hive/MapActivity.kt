@@ -35,11 +35,15 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             startActivity(intent2)
         }
 
+        val hiveData = intent.getStringExtra("hiveData")
+        val password = intent.getStringExtra("password")
+        val username = intent.getStringExtra("username")
+
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-        ApiCall().getsensor(this) { gps ->
+        ApiCall().getsensor(this,"3", "admin", "admin") { gps ->
             var lat = gps.gps_lat
             var lon = gps.gps_lon
             val loca = LatLng(lat,lon)

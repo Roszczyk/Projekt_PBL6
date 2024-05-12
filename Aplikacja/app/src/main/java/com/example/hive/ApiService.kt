@@ -1,20 +1,14 @@
 package com.example.hive
 
-import retrofit.Call
-import retrofit.http.GET
-import retrofit2.http.Body
-import retrofit2.http.Headers
-import retrofit2.http.POST
+import retrofit2.Call
+import retrofit2.http.GET
+import retrofit2.http.Path
 
-// This interface defines an API
-// service for getting random jokes.
 interface ApiService {
 
-    @GET("data/sensors")
-    fun getsensors(): Call<DataModel>
+    @GET("{device}/sensors")
+    fun getsensors(@Path("device") device: String): Call<DataModel>
 
-    @GET("data/tempHum")
-    fun getTempHum(): Call<DataTempHum>
-
-
+    @GET("/{user}/hives")
+    fun gethives(@Path("user") user: String): Call<DataHives>
 }
