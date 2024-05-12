@@ -1,5 +1,6 @@
 package com.example.hive
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
@@ -32,6 +33,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var ValUpdate: TextView
     private lateinit var ValNoise:TextView
     private lateinit var ValAtivity: TextView
+    private lateinit var Name:TextView
+    private lateinit var Logout:TextView
     private lateinit var BtnMap: LinearLayout
     private lateinit var BtnLight: LinearLayout
     private lateinit var BtnHeat: LinearLayout
@@ -41,6 +44,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var ImageLight: ImageView
     private lateinit var ImageHeat: ImageView
     private lateinit var ImageCover: ImageView
+    private lateinit var ImageBack: ImageView
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -53,6 +58,9 @@ class MainActivity : AppCompatActivity() {
         ValAtivity = findViewById(R.id.activity)
         ValHeat = findViewById(R.id.heatingstatus)
         ValUpdate = findViewById(R.id.updated_at)
+        Name = findViewById(R.id.hiveName)
+        Logout = findViewById(R.id.logout)
+        ImageBack = findViewById(R.id.back)
         //progressBar = findViewById(R.id.loader)
         BtnMap = findViewById(R.id.boxMap)
         BtnHum = findViewById(R.id.boxhum)
@@ -68,73 +76,81 @@ class MainActivity : AppCompatActivity() {
 
         val baseUrl = "http://10.0.2.2:5000/data/"
 
+        val hiveData = intent.getStringExtra("selectedHive")
+        val password = intent.getStringExtra("password")
+        val username = intent.getStringExtra("username")
+
+        if (hiveData != null && username != null && password != null) {
+            ApiCall().getsensor(this, hiveData,username, password) { payload ->
+                var temp = payload.temperature.toString()
+                var hum = payload.humidity.toString()
+                var cover = payload.digital_in.toString()
+                var heat = payload.heating.toString()
+                var lig = payload.lights.toString()
+                var noise = payload.noise.toString()
+                var activity = payload.activity.toString()
+                //TO DO when new version of payload NO GPS
+                if (cover == "false") {
+                    ValOpen.text = "open"
+                    ImageCover.setImageResource(R.drawable.openclose)
+                }
+                else {
+                    ValOpen.text = "closed"
+                    ImageCover.setImageResource(R.drawable.close)
+                }
 
 
-        ApiCall().getsensor(this) { payload ->
-            var temp = payload.temperature.toString()
-            var hum = payload.humidity.toString()
-            var cover = payload.digital_in.toString()
-            var heat = payload.heating.toString()
-            var lig = payload.lights.toString()
-            var noise = payload.noise.toString()
-            var activity = payload.activity.toString()
-            //TO DO when new version of payload NO GPS
-            if (cover == "false") {
-                ValOpen.text = "open"
-                ImageCover.setImageResource(R.drawable.openclose)
-            }
-            else {
-                ValOpen.text = "closed"
-                ImageCover.setImageResource(R.drawable.close)
-            }
+                if (heat == "true") {
+                    ValHeat.text = "ON"
+                    ImageHeat.setImageResource(R.drawable.heatingon)
+                }
+                else{
+                    ValHeat.text = "OFF"
+                    ImageHeat.setImageResource(R.drawable.heating)
+                }
+                if (lig == "true") {
+                    ValLight.text = "ON"
+                    ImageLight.setImageResource(R.drawable.lighton)
+                }
+                else {
+                    ValLight.text = "OFF"
+                    ImageLight.setImageResource(R.drawable.light)
+                }
+                if (noise == "true") {
+                    ValNoise.text = "high"
+                }
+                else {
+                    ValNoise.text = "low"
+                }
+                if (activity == "true") {
+                    ValAtivity.text = "high"
+                }
+                else {
+                    ValAtivity.text = "low"
+                }
 
 
-            if (heat == "true") {
-                ValHeat.text = "ON"
-                ImageHeat.setImageResource(R.drawable.heatingon)
-            }
-            else{
-                ValHeat.text = "OFF"
-                ImageHeat.setImageResource(R.drawable.heating)
-            }
-            if (lig == "true") {
-                ValLight.text = "ON"
-                ImageLight.setImageResource(R.drawable.lighton)
-            }
-            else {
-                ValLight.text = "OFF"
-                ImageLight.setImageResource(R.drawable.light)
-            }
-            if (noise == "true") {
-                ValNoise.text = "high"
-            }
-            else {
-                ValNoise.text = "low"
-            }
-            if (activity == "true") {
-                ValAtivity.text = "high"
-            }
-            else {
-                ValAtivity.text = "low"
-            }
+                //to this line
+                //Setting correct timestamp of update for last update
+                val currentTimestamp = System.currentTimeMillis()
+                val timeZone = TimeZone.getTimeZone("Europe/Warsaw")
+                val dateFormat = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale("pl", "PL"))
 
+                dateFormat.timeZone = timeZone
+                ValUpdate.text = dateFormat.format(Date(currentTimestamp))
+                ValTemp.text = "$temp°C"
+                ValHum.text = "$hum%"
+                Name.text = "Hive no.  " + hiveData
+                //progressBar.visibility = View.GONE
 
-            //to this line
-            //Setting correct timestamp of update for last update
-            val currentTimestamp = System.currentTimeMillis()
-            val timeZone = TimeZone.getTimeZone("Europe/Warsaw")
-            val dateFormat = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale("pl", "PL"))
-
-            dateFormat.timeZone = timeZone
-            ValUpdate.text = dateFormat.format(Date(currentTimestamp))
-            ValTemp.text = "$temp°C"
-            ValHum.text = "$hum%"
-            //progressBar.visibility = View.GONE
-
+            }
         }
 
         BtnMap.setOnClickListener() {
             val intent = Intent(this, MapActivity::class.java)
+            intent.putExtra("hiveData", hiveData)
+            intent.putExtra("password", password)
+            intent.putExtra("username", username)
             startActivity(intent)
 
         }
@@ -148,82 +164,110 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
 
         }
+        Logout.setOnClickListener() {
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+
+        }
+        ImageBack.setOnClickListener() {
+            val intent2 = Intent(this, HivesActivity::class.java)
+            if (username != null && password != null ) {
+                ApiCall().gethives(this, username, password) { payload ->
+
+
+                    val hivesString = payload.hives
+
+                    val hivesList = hivesString.split(",")
+
+                    val intent = Intent(this, HivesActivity::class.java)
+
+                    intent.putStringArrayListExtra("hivesData", ArrayList(hivesList))
+                    intent.putExtra("password", password)
+                    intent.putExtra("username", username)
+
+                    startActivity(intent)
+
+
+                }
+            }
+            startActivity(intent2)
+        }
         BtnLight.setOnClickListener() {
 
 
             ImageLight.setImageResource(R.drawable.lighton)
 
-            ApiCall().getsensor(this) { payload ->
-                var lig = payload.lights
-                var str =""
+            if (hiveData != null && username != null && password != null) {
+                ApiCall().getsensor(this, hiveData, username, password) { payload ->
+                    var lig = payload.lights
+                    var str =""
 
-                if (lig == true)
-                    str = "${baseUrl}lights?value=false"
-                else
-                    str = "${baseUrl}lights?value=true"
-                lig= !lig
+                    if (lig == true)
+                        str = "${baseUrl}lights?value=false"
+                    else
+                        str = "${baseUrl}lights?value=true"
+                    lig= !lig
 
-                val jsonParams = JSONObject()
+                    val jsonParams = JSONObject()
 
-                val request = JsonObjectRequest(
-                    Request.Method.POST, "${str}", jsonParams,
-                    { response ->
+                    val request = JsonObjectRequest(
+                        Request.Method.POST, "${str}", jsonParams,
+                        { response ->
 
-                        if (lig == true) {
-                            ValLight.text = "ON"
-                            ImageLight.setImageResource(R.drawable.lighton)
+                            if (lig == true) {
+                                ValLight.text = "ON"
+                                ImageLight.setImageResource(R.drawable.lighton)
+                            } else {
+                                ValLight.text = "OFF"
+                                ImageLight.setImageResource(R.drawable.light)
+                            }
+
+                        },
+                        { error ->
+                            Log.e("MainActivity", "Error during API call: ${error.localizedMessage}")
                         }
-                        else {
-                            ValLight.text = "OFF"
-                            ImageLight.setImageResource(R.drawable.light)
-                        }
-
-                    },
-                    { error ->
-                        Log.e("MainActivity", "Error during API call: ${error.localizedMessage}")
-                    }
-                )
-                Volley.newRequestQueue(this).add(request)
+                    )
+                    Volley.newRequestQueue(this).add(request)
+                }
             }
         }
         BtnHeat.setOnClickListener() {
 
 
+            if (hiveData != null && username != null && password != null) {
+                ApiCall().getsensor(this, hiveData, username, password) { payload ->
+                    var heat = payload.heating
+                    var str =""
 
+                    if (heat == true)
+                        str = "${baseUrl}heating?value=false"
+                    else
+                        str = "${baseUrl}heating?value=true"
 
-            ApiCall().getsensor(this) { payload ->
-                var heat = payload.heating
-                var str =""
+                    heat= !heat!!
 
-                if (heat == true)
-                    str = "${baseUrl}heating?value=false"
-                else
-                    str = "${baseUrl}heating?value=true"
+                    val jsonParams = JSONObject()
 
-                heat= !heat!!
+                    val request = JsonObjectRequest(
+                        Request.Method.POST, "${str}", jsonParams,
+                        { response ->
 
-                val jsonParams = JSONObject()
+                            if (heat == true) {
+                                ValHeat.text = "ON"
+                                ImageHeat.setImageResource(R.drawable.heatingon)
+                            } else{
+                                ValHeat.text = "OFF"
+                                ImageHeat.setImageResource(R.drawable.heating)
+                            }
 
-                val request = JsonObjectRequest(
-                    Request.Method.POST, "${str}", jsonParams,
-                    { response ->
+                        },
+                        { error ->
+                            Log.e("MainActivity", "Error during API call: ${error.localizedMessage}")
 
-                        if (heat == true) {
-                            ValHeat.text = "ON"
-                            ImageHeat.setImageResource(R.drawable.heatingon)
                         }
-                        else{
-                            ValHeat.text = "OFF"
-                            ImageHeat.setImageResource(R.drawable.heating)
-                        }
-
-                    },
-                    { error ->
-                        Log.e("MainActivity", "Error during API call: ${error.localizedMessage}")
-
-                    }
-                )
-                Volley.newRequestQueue(this).add(request)
+                    )
+                    Volley.newRequestQueue(this).add(request)
+                }
             }
         }
     }

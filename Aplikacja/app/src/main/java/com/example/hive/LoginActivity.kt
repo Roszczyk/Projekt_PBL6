@@ -61,6 +61,8 @@ class LoginActivity : AppCompatActivity() {
             val intent = Intent(this, HivesActivity::class.java)
 
             intent.putStringArrayListExtra("hivesData", ArrayList(hivesList))
+            intent.putExtra("password", password)
+            intent.putExtra("username", username)
 
             startActivity(intent)
 

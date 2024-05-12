@@ -6,8 +6,8 @@ import retrofit2.http.Path
 
 interface ApiService {
 
-    @GET("3/sensors")
-    fun getsensors(): Call<DataModel>
+    @GET("{device}/sensors")
+    fun getsensors(@Path("device") device: String): Call<DataModel>
 
     @GET("/{user}/hives")
     fun gethives(@Path("user") user: String): Call<DataHives>

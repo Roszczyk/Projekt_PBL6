@@ -25,10 +25,10 @@ class BasicAuthInterceptor(username: String, password: String) : Interceptor {
 
 class ApiCall {
 
-    fun getsensor(context: Context, callback: (DataModel) -> Unit) {
+    fun getsensor(context: Context, device: String, username: String, password: String, callback: (DataModel) -> Unit) {
 
         val client = OkHttpClient.Builder()
-            .addInterceptor(BasicAuthInterceptor("admin", "admin"))
+            .addInterceptor(BasicAuthInterceptor(username, password))
             .build()
 
         val gson = GsonBuilder()
@@ -43,7 +43,7 @@ class ApiCall {
 
         val service: ApiService = retrofit.create(ApiService::class.java)
 
-        val call: Call<DataModel> = service.getsensors()
+        val call: Call<DataModel> = service.getsensors(device)
 
         call.enqueue(object : Callback<DataModel> {
 
