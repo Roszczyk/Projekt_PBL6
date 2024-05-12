@@ -24,6 +24,10 @@
             android:name=".TemperatureActivity"
             android:exported="false" />
         <activity
+            android:name=".HivesActivity"
+            android:exported="false" />
+        <activity
+
             android:name=".MainActivity"></activity>
 <!--            android:exported="true">-->
 <!--            <intent-filter>-->

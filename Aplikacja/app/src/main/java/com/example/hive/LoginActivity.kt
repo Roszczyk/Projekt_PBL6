@@ -1,5 +1,6 @@
 package com.example.hive
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -53,8 +54,15 @@ class LoginActivity : AppCompatActivity() {
         ApiCall().gethives(this, username, password) { payload ->
 
 
-            Log.d("SCANER", "${payload.hives}")
-            Log.d("SCANER", "cokolwiek")
+            val hivesString = payload.hives
+
+            val hivesList = hivesString.split(",")
+
+            val intent = Intent(this, HivesActivity::class.java)
+
+            intent.putStringArrayListExtra("hivesData", ArrayList(hivesList))
+
+            startActivity(intent)
 
 
         }
