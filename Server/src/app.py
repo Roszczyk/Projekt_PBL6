@@ -24,6 +24,8 @@ DESC = [("timestamp", -1)]
 SWAGGER_URL = '/swagger'
 API_URL = '/swagger.json'
 
+PUBSUB_URI = 'http://10.141.10.69:2137'
+
 
 class CustomBasicAuth(BasicAuth):
     def __init__(self, app, auth_service_url):
@@ -68,11 +70,6 @@ class SensorData:
         self.lights = lights
         self.heating = heating
 
-
-# class UserHives:
-#     def __init__(self, user_id=None, hives=[]):
-#         self.user_id = user_id
-#         self.hives = hives
 
 def user_has_access_to_hive(user_id, device_id):
     user_hives = mongo.db.hives.find_one({"user_id": user_id})
@@ -329,8 +326,9 @@ def post_data(device_id, cmd):
     except ValueError:
         return jsonify({'message': 'Invalid value. A boolean is required.'}), 400
 
-    last_value = mongo.db.commands.find_one({cmd: EXIST, "device_id": device_id}, sort=DESC)
+    last_value = mongo.db.commands.find_one({cmd: EXIST, "device_id": device_id}, sort=DESC)[cmd]
     if value == last_value:
+        print("Last value:", last_value)
         return jsonify({'message': 'Data already up to date.'}), 200
 
     result_dict = Command(device_id=device_id, timestamp=datetime.now(), **{cmd: value}).__dict__
@@ -339,6 +337,13 @@ def post_data(device_id, cmd):
     mongo.db.commands.insert_one(result_dict)
 
     # POST to PubSub over http
+    post_data = {
+        'device_id': device_id,
+        'timestamp': datetime.now(),
+        **{cmd: value}
+    }
+    response = requests.post(PUBSUB_URI, data=post_data)
+    print("Response:", response.text)
 
     return jsonify({'message': 'Data published successfully.'}), 200
 
