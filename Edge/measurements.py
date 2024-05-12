@@ -1,4 +1,5 @@
 import numpy as np
+import time
 
 def add_random(rng):
     return np.random.randint(-rng*100000, rng*100000)/100000
@@ -31,4 +32,9 @@ def measure_digital_ins():
         "digital_in_2" : random_digital_in(0.2)
     }
     return meas
+
+def measure_function(dev):
+    dev.measure_all()
+    print("measured all")
+    time.sleep(25)
 

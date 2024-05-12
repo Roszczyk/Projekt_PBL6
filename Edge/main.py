@@ -1,7 +1,8 @@
-from edge_mqtt import broker_publish, broker_subscribe_init, broker_subscribe_loop
+from edge_mqtt import broker_publish, broker_subscribe_init, broker_subscribe_loop, publish_measurements
 from payload import prepare_payload
-from measurements import measure_temp, measure_humidity, measure_gps, measure_digital_ins
+from measurements import measure_temp, measure_humidity, measure_gps, measure_digital_ins, measure_function
 import time
+from threading import Thread
 
 class DeviceStatus:
     def __init__(self, device_id):
@@ -26,9 +27,11 @@ class DeviceStatus:
         self.digital_in = measure_digital_ins()
 
     def change_light(self, new_state):
+        # operacja zmiany diody na hardware
         self.light = new_state
 
     def change_heating(self, new_state):
+        # operacja zmiany diody na hardware
         self.heating = new_state
 
     def measure_all(self):
@@ -45,12 +48,6 @@ class DeviceStatus:
         print(f'Lights: \n{self.light}\n\nHeating\n{self.heating}\n')
 
 
-def publish_measurements(dev, mqtt_user, mqtt_password, mqtt_topic):
-    message = prepare_payload(dev)
-    broker_publish(message, mqtt_topic, broker_addr["ip"], broker_addr["port"], mqtt_user, mqtt_password)
-    time.sleep(10)
-
-
 if __name__ == "__main__":
     mqtt_user = "rw"
     mqtt_password = "readwrite"
@@ -62,5 +59,16 @@ if __name__ == "__main__":
 
     dev.measure_all()
     client = broker_subscribe_init(mqtt_listen_topic, broker_addr["ip"], broker_addr["port"], mqtt_user, mqtt_password, dev)
-    broker_subscribe_loop(client)
+
+    thread_sub = Thread(targer=broker_subscribe_loop, args=(client,), daemon=True)
+    thread_pub = Thread(target=publish_measurements, args=(dev, broker_addr, mqtt_user, mqtt_password, mqtt_publish_topic), deamon=True)
+    thread_meas = Thread(target=measure_function, args=(dev,), deamon=True)
+
+    thread_sub.start()
+    thread_pub.start()
+    thread_meas.start()
+
+    thread_sub.join()
+    thread_pub.join()
+    thread_meas.join()
 
