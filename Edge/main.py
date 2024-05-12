@@ -1,4 +1,4 @@
-from edge_mqtt import broker_publish, broker_subscribe_init, broker_subscribe_loop, publish_measurements
+from edge_mqtt import broker_publish, broker_subscribe_init, broker_subscribe_loop, publish_measurements_thread
 from payload import prepare_payload
 from measurements import measure_temp, measure_humidity, measure_gps, measure_digital_ins, measure_function
 import time
@@ -60,9 +60,9 @@ if __name__ == "__main__":
     dev.measure_all()
     client = broker_subscribe_init(mqtt_listen_topic, broker_addr["ip"], broker_addr["port"], mqtt_user, mqtt_password, dev)
 
-    thread_sub = Thread(targer=broker_subscribe_loop, args=(client,), daemon=True)
-    thread_pub = Thread(target=publish_measurements, args=(dev, broker_addr, mqtt_user, mqtt_password, mqtt_publish_topic), deamon=True)
-    thread_meas = Thread(target=measure_function, args=(dev,), deamon=True)
+    thread_sub = Thread(target=broker_subscribe_loop, args=(client,), daemon=True)
+    thread_pub = Thread(target=publish_measurements_thread, args=(dev, broker_addr, mqtt_user, mqtt_password, mqtt_publish_topic), daemon=True)
+    thread_meas = Thread(target=measure_function, args=(dev,), daemon=True)
 
     thread_sub.start()
     thread_pub.start()

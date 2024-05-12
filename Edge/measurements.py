@@ -34,7 +34,8 @@ def measure_digital_ins():
     return meas
 
 def measure_function(dev):
-    dev.measure_all()
-    print("measured all")
-    time.sleep(25)
+    while True:
+        dev.measure_all()
+        print("measured all")
+        time.sleep(25)
 

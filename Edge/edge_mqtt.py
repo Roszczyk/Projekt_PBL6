@@ -50,4 +50,8 @@ def publish_measurements(dev, broker_addr, mqtt_user, mqtt_password, mqtt_topic)
     message = prepare_payload(dev)
     broker_publish(message, mqtt_topic, broker_addr["ip"], broker_addr["port"], mqtt_user, mqtt_password)
     print("measurements published")
-    time.sleep(40)
+
+def publish_measurements_thread(dev, broker_addr, mqtt_user, mqtt_password, mqtt_topic):
+    while True:
+        publish_measurements(dev, broker_addr, mqtt_user, mqtt_password, mqtt_topic)
+        time.sleep(40)
