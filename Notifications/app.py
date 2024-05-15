@@ -1,10 +1,9 @@
-# AuthorizeUser
-# Author: PAM
-
+import asyncio
+import websockets
+import json
 from flask import Flask, jsonify, request
 import mysql.connector
-import hashlib
-import datetime
+from threading import Thread
 
 app = Flask(__name__)
 
@@ -16,6 +15,28 @@ db_config = {
     'password': 'password',
     'database': 'mysql'
 }
+
+# List to keep track of connected WebSocket clients
+clients = {}
+
+
+async def push_notifications(websocket, path):
+    ip = websocket.remote_address[0]  # IS it correct?
+    clients[ip] = websocket
+    try:
+        while True:
+            await asyncio.sleep(5)  # Keep connection alive with dummy notification
+    except websockets.exceptions.ConnectionClosedError:
+        print("Connection with client closed.")
+    finally:
+        clients.pop(ip)
+
+
+async def send_notification(notification, ip):
+    notification_json = json.dumps(notification)
+    if clients:
+
+        await asyncio.wait([client.send(notification_json) for client in clients])
 
 
 def get_recent_user_ip(username):
@@ -32,8 +53,27 @@ def get_recent_user_ip(username):
 
 @app.route('/notify', methods=['POST'])
 def notify():
-    ip = get_recent_user_ip("admin")
+    device_id = request.form.get('device_id')
+    username = get_user_of_device(device_id)
+    ip = get_recent_ip(username)
+    notification = {'message': f'Notification for {username}: Recent IP is {ip}'}
+
+    # Send notification via WebSocket
+    asyncio.run(send_notification(notification, ip))
+
+    return jsonify({'status': 'Notification sent', 'notification': notification})
 
 
-if __name__ == '__main__':
+def run_flask():
     app.run(debug=True, port=5001)
+
+
+# Start Flask app in a separate thread
+flask_thread = Thread(target=run_flask)
+flask_thread.start()
+
+# Start WebSocket server
+start_server = websockets.serve(push_notifications, "localhost", 8765)
+
+asyncio.get_event_loop().run_until_complete(start_server)
+asyncio.get_event_loop().run_forever()
