@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
@@ -22,6 +23,7 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.Volley
 import android.widget.Toast
+import com.android.volley.AuthFailureError
 
 class MainActivity : AppCompatActivity() {
 
@@ -74,7 +76,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        val baseUrl = "http://10.0.2.2:5000/data/"
+        val baseUrl = "http://10.0.2.2:5000/"
 
         val hiveData = intent.getStringExtra("selectedHive")
         val password = intent.getStringExtra("password")
@@ -203,17 +205,17 @@ class MainActivity : AppCompatActivity() {
                     var str =""
 
                     if (lig == true)
-                        str = "${baseUrl}lights?value=false"
+                        str = "${baseUrl}/"+hiveData+"/lights?value=false"
                     else
-                        str = "${baseUrl}lights?value=true"
+                        str = "${baseUrl}/"+hiveData+"/lights?value=true"
                     lig= !lig
 
                     val jsonParams = JSONObject()
 
-                    val request = JsonObjectRequest(
-                        Request.Method.POST, "${str}", jsonParams,
+                    val request = object : JsonObjectRequest(
+                        Method.POST, str, jsonParams,
                         { response ->
-
+                            // Handle response
                             if (lig == true) {
                                 ValLight.text = "ON"
                                 ImageLight.setImageResource(R.drawable.lighton)
@@ -221,12 +223,24 @@ class MainActivity : AppCompatActivity() {
                                 ValLight.text = "OFF"
                                 ImageLight.setImageResource(R.drawable.light)
                             }
-
                         },
                         { error ->
+                            // Handle error
                             Log.e("MainActivity", "Error during API call: ${error.localizedMessage}")
+                        }) {
+
+                        @Throws(AuthFailureError::class)
+                        override fun getHeaders(): Map<String, String> {
+                            val headers = HashMap<String, String>()
+                            // Add your Authorization token here
+                            val credentials = username+ ":" +password // Replace with your credentials
+                            val auth = "Basic " + Base64.encodeToString(credentials.toByteArray(), Base64.NO_WRAP)
+                            headers["Authorization"] = auth
+                            return headers
                         }
-                    )
+                    }
+
+// Add the request to the request queue
                     Volley.newRequestQueue(this).add(request)
                 }
             }
@@ -240,16 +254,16 @@ class MainActivity : AppCompatActivity() {
                     var str =""
 
                     if (heat == true)
-                        str = "${baseUrl}heating?value=false"
+                        str = "${baseUrl}/"+hiveData+"/heating?value=false"
                     else
-                        str = "${baseUrl}heating?value=true"
+                        str = "${baseUrl}/"+hiveData+"/heating?value=true"
 
                     heat= !heat!!
 
                     val jsonParams = JSONObject()
 
-                    val request = JsonObjectRequest(
-                        Request.Method.POST, "${str}", jsonParams,
+                    val request = object : JsonObjectRequest(
+                        Method.POST, str, jsonParams,
                         { response ->
 
                             if (heat == true) {
@@ -264,12 +278,33 @@ class MainActivity : AppCompatActivity() {
                         { error ->
                             Log.e("MainActivity", "Error during API call: ${error.localizedMessage}")
 
+                        }){
+
+                        @Throws(AuthFailureError::class)
+                        override fun getHeaders(): Map<String, String> {
+                            val headers = HashMap<String, String>()
+                            // Add your Authorization token here
+                            val credentials = username+ ":" +password // Replace with your credentials
+                            val auth = "Basic " + Base64.encodeToString(credentials.toByteArray(), Base64.NO_WRAP)
+                            headers["Authorization"] = auth
+                            return headers
                         }
-                    )
+
+                    }
                     Volley.newRequestQueue(this).add(request)
                 }
             }
         }
     }
 
+}
+
+
+ fun getHeaders(): Map<String, String> {
+    val headers = HashMap<String, String>()
+    // Add your Authorization token here
+    val credentials = "username:password" // Replace with your credentials
+    val auth = "Basic " + Base64.encodeToString(credentials.toByteArray(), Base64.NO_WRAP)
+    headers["Authorization"] = auth
+    return headers
 }
