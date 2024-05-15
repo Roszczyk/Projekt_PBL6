@@ -15,28 +15,25 @@
         android:id="@+id/addressContainer"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="48dp"
         android:layout_weight="1"
         android:background="#CCFFFFFF"
         android:gravity="center"
         android:orientation="vertical"
         android:padding="8dp"
         app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="-16dp">
+        tools:layout_editor_absoluteX="25dp">
 
 
         <TextView
-            android:id="@+id/address"
+            android:id="@+id/hiveName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="casual"
             android:fontWeight="800"
-            android:text="Intenet of Bees"
-            android:textSize="40dp" />
-
-
-        <Space
-            android:layout_width="wrap_content"
-            android:layout_height="8dp" />
+            android:text="Hive no. ABABABABAB1212121212"
+            android:textSize="20dp"
+            android:textStyle="bold" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -478,6 +475,25 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/logout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="4dp"
+        android:text="Log Out"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/back"
+        android:layout_width="64dp"
+        android:layout_height="36dp"
+        android:layout_marginTop="4dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/arrow" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
