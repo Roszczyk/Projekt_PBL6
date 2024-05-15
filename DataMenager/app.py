@@ -69,6 +69,18 @@ def get_all_users():
     return users
 
 
+def get_recent_ips():
+    """Get the recent IP addresses and timestamps for all users from the database."""
+    connection = mysql.connector.connect(**db_config)
+    cursor = connection.cursor()
+    query = "SELECT username, recent_ip, timestamp FROM users_ip"
+    cursor.execute(query)
+    recent_ips = [{"username": row[0], "recent_ip": row[1], "timestamp": row[2]} for row in cursor.fetchall()]
+    cursor.close()
+    connection.close()
+    return recent_ips
+
+
 def add_hive_to_user(user_id, hive_id):
     """Add a hive to a certain user."""
     mongo.db.hives.update_one(
@@ -446,6 +458,45 @@ def get_last_5_detections():
     # Convert ObjectId to string
     detections_json = json_util.dumps(detections, indent=2)
     return detections_json, 200
+
+
+@app.reout('/list_ips', methods=['GET'])
+def list_ips_route():
+    """
+    Get the list of all recent IP addresses.
+    ---
+    responses:
+        200:
+            description: The list of IP addresses.
+            schema:
+                type: object
+                properties:
+                    recent_ips:
+                        type: array
+                        items:
+                            type: object
+                            properties:
+                                username:
+                                    type: string
+                                recent_ip:
+                                    type: string
+                                timestamp:
+                                    type: string
+        404:
+            description: No IP addresses found.
+            schema:
+                type: object
+                properties:
+                    message:
+                        type: string
+                        description: The error message.
+    """
+    recent_ips = get_recent_ips()
+
+    if recent_ips:
+        return jsonify({'recent_ips': recent_ips}), 200
+    else:
+        return jsonify({'message': 'No IP addresses found.'}), 404
 
 
 @app.route(API_URL)

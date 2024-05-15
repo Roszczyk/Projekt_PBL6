@@ -4,6 +4,7 @@
 from flask import Flask, jsonify, request
 import mysql.connector
 import hashlib
+import datetime
 
 app = Flask(__name__)
 
@@ -27,6 +28,26 @@ def get_password_hash(username):
     cursor.close()
     connection.close()
     return result[0] if result else None
+
+
+def set_recent_user_ip(username, ip):
+    """Set the recent IP address and timestamp of the user in the MySQL database."""
+    connection = mysql.connector.connect(**db_config)
+    cursor = connection.cursor()
+
+    query = """
+    INSERT INTO users_ip (username, recent_ip, timestamp) 
+    VALUES (%s, %s, %s) 
+    ON DUPLICATE KEY UPDATE 
+        recent_ip = VALUES(recent_ip), 
+        timestamp = VALUES(timestamp)
+    """
+    timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    cursor.execute(query, (username, ip, timestamp))
+
+    connection.commit()
+    cursor.close()
+    connection.close()
 
 
 @app.route('/check_credentials', methods=['POST'])
@@ -59,12 +80,13 @@ def check_credentials():
     username = data.get('username')
     password = data.get('password')
 
-    # Retrieve the password hash from the database for the given username
     stored_password_hash = get_password_hash(username)
 
-    # Compare the password hash with the hash of the input password
     valid = stored_password_hash is not None and \
         hashlib.sha256(password.encode()).hexdigest() == stored_password_hash
+
+    if valid:
+        set_recent_user_ip(username, request.remote_addr)
 
     return jsonify({'valid': valid})
 
