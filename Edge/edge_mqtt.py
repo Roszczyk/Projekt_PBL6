@@ -3,6 +3,7 @@ import time
 from functools import partial
 import json
 from collections import defaultdict
+from payload import prepare_payload
 
 def execute_command(message : str, dev):
     payload = json.loads(message)
@@ -43,3 +44,14 @@ def broker_subscribe_init(topic, broker_ip, broker_port, username, password, dev
 
 def broker_subscribe_loop(client):
     client.loop_forever()
+
+
+def publish_measurements(dev, broker_addr, mqtt_user, mqtt_password, mqtt_topic):
+    message = prepare_payload(dev)
+    broker_publish(message, mqtt_topic, broker_addr["ip"], broker_addr["port"], mqtt_user, mqtt_password)
+    print("measurements published")
+
+def publish_measurements_thread(dev, broker_addr, mqtt_user, mqtt_password, mqtt_topic):
+    while True:
+        publish_measurements(dev, broker_addr, mqtt_user, mqtt_password, mqtt_topic)
+        time.sleep(40)
