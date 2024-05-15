@@ -96,6 +96,44 @@ def before_request():
             return jsonify({'message': 'Unauthorized access to hive.'}), 401
 
 
+@app.route('/data/temp-hum-chart', methods=['GET'])
+def get_temp_hum_chart():
+    """
+    Get temperature and humidity data for the last 24 hours for usage in chart - HH:mm and only 12 reads.
+    ---
+    responses:
+        200:
+            description: A list of temperature and humidity data.
+            schema:
+                type: object
+                properties:
+                    data:
+                        type: array
+                        items:
+                            type: object
+                            properties:
+                                timestamp:
+                                    type: string
+                                    format: time (HH:mm)
+                                temperature:
+                                    type: number
+                                humidity:
+                                    type: number
+    """
+
+    # MOŻE NIE DZIAŁAĆ
+    data = mongo.db.telemetry.find({"temperature": EXIST, "humidity": EXIST}, sort=DESC, limit=12)
+    result = []
+    for d in data:
+        result.append({
+            'timestamp': d['timestamp'].strftime('%H:%M'),
+            'temperature': d['temperature'],
+            'humidity': d['humidity']
+        })
+
+    return jsonify({'data': result})
+
+
 @app.route('/<user_id>/hives', methods=['GET'])
 @custom_basic_auth.required
 def get_hives(user_id):
