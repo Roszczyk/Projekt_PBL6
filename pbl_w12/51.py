@@ -7,7 +7,7 @@ from pandas.plotting import scatter_matrix
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+from sklearn.metrics import classification_report, accuracy_score
 
 # ładowanie zbioru danych
 url = "https://raw.githubusercontent.com/jbrownlee/Datasets/master/iris.csv"
@@ -46,6 +46,8 @@ plt.show()
 array = dataset.values
 X = array[:, 0:4]
 y = array[:, 4]
+
+print('len dataset:', len(dataset))
 
 # Podział danych na zestaw treningowy i testowy
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
