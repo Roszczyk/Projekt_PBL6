@@ -3,8 +3,14 @@ import websockets
 import base64
 
 # Hardcoded credentials to match the server's credentials
-USERNAME = "users"
-PASSWORD = "pass"
+# USERNAME = "admin"
+# PASSWORD = "admin"
+
+USERNAME = "username"
+PASSWORD = "password"
+
+# USERNAME = "wrong_username"
+# PASSWORD = "blablabla"
 
 
 async def test_websocket():
@@ -14,12 +20,12 @@ async def test_websocket():
     credentials = f"{USERNAME}:{PASSWORD}"
     encoded_credentials = base64.b64encode(credentials.encode('utf-8')).decode('utf-8')
     headers = {
-        'Authorization': f'Basic {encoded_credentials}'
+        'Authorization': f'basic {encoded_credentials}'
     }
 
     async with websockets.connect(uri, extra_headers=headers) as websocket:
         try:
-            for _ in range(3):  # Receive 3 notifications
+            for _ in range(10):  # Receive 10 notifications
                 notification = await websocket.recv()
                 print(f"Received notification: {notification}")
         except websockets.exceptions.ConnectionClosedError as e:

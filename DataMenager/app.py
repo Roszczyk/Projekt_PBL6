@@ -460,7 +460,7 @@ def get_last_5_detections():
     return detections_json, 200
 
 
-@app.reout('/list_ips', methods=['GET'])
+@app.route('/list_ips', methods=['GET'])
 def list_ips_route():
     """
     Get the list of all recent IP addresses.
