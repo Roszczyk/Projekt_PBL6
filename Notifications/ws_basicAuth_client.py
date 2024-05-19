@@ -3,11 +3,11 @@ import websockets
 import base64
 
 # Hardcoded credentials to match the server's credentials
-# USERNAME = "admin"
-# PASSWORD = "admin"
+USERNAME = "admin"
+PASSWORD = "admin"
 
-USERNAME = "username"
-PASSWORD = "password"
+# USERNAME = "username"
+# PASSWORD = "password"
 
 # USERNAME = "wrong_username"
 # PASSWORD = "blablabla"

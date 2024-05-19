@@ -12,7 +12,7 @@ app = Flask(__name__)
 # Configuration
 IMAGE_URL = "http://127.0.0.1:5003/currentframe.jpg"
 SAVE_DIRECTORY = "images/"
-REST_ENDPOINT = "http://your_rest_endpoint.com/upload"
+NOTIFICATIONS_URL = "http://127.0.0.1:5006/notify"
 
 DB_URL = "10.141.10.69:27017"
 DB_NAME = "data_db"
@@ -36,18 +36,19 @@ def fetch_save_post_image(collection):
 
             # AI
             # AI
-            detection = random.randint(0, 1)
+            detection = random.randint(0, 3)
             # AI
             # AI
 
-            if not detection:
+            if detection > 0:
                 print("No hornet detected.")
                 return
 
             print("Hornet detected!!! . Uploading to the REST endpoint.")
             collection.insert_one({"timestamp": datetime.now()})
 
-            response = requests.post(REST_ENDPOINT)  # POST do mikrousługi powiadomień
+            data = {'device_id': 'camera'}
+            response = requests.post(NOTIFICATIONS_URL, data=data)
 
             if response.status_code == 200:
                 print("Successfully posted to the REST endpoint.")

@@ -6,7 +6,7 @@ tar -xzf rtsp-simple-server_v0.18.2_linux_amd64.tar.gz
 
 rtmp://10.141.10.69/live
 TA DZIAŁA
-ffmpeg -re -stream_loop -1 -i ./RTMP_Server/SampleVideo_1280x720_10mb.mp4  \
+ffmpeg -re -stream_loop -1 -i ./RTMP_Server/Sample_hornet.mp4  \
     -vcodec libx264 -preset:v ultrafast \
     -acodec aac \
     -f flv rtmp://127.0.0.1/live
