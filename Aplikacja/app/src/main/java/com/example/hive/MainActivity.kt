@@ -1,6 +1,9 @@
 package com.example.hive
 
 import android.annotation.SuppressLint
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
 import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
@@ -23,6 +26,8 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.Volley
 import android.widget.Toast
+import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat.getSystemService
 import com.android.volley.AuthFailureError
 
 class MainActivity : AppCompatActivity() {
@@ -81,6 +86,23 @@ class MainActivity : AppCompatActivity() {
         val hiveData = intent.getStringExtra("selectedHive")
         val password = intent.getStringExtra("password")
         val username = intent.getStringExtra("username")
+
+        val channelId = "WebSocketChannel"
+
+
+        if (username != null && password != null) {
+            // Pobierz WebSocketClient z singletona
+
+            val webSocketClient = WebSocketManager.getWebSocketClient(username, password, this, channelId)
+
+
+            // Ustaw listener dla wiadomości z WebSocket
+            WebSocketManager.messageListener = { message ->
+                runOnUiThread {
+                    Log.d("WebSocket", "Received Main: $message")
+                }
+            }
+        }
 
         if (hiveData != null && username != null && password != null) {
             ApiCall().getsensor(this, hiveData,username, password) { payload ->
@@ -168,6 +190,7 @@ class MainActivity : AppCompatActivity() {
         }
         Logout.setOnClickListener() {
             val intent = Intent(this, LoginActivity::class.java)
+            WebSocketManager.closeWebSocket()
             startActivity(intent)
 
         }
@@ -294,6 +317,7 @@ class MainActivity : AppCompatActivity() {
                     Volley.newRequestQueue(this).add(request)
                 }
             }
+
         }
     }
 
@@ -308,3 +332,5 @@ class MainActivity : AppCompatActivity() {
     headers["Authorization"] = auth
     return headers
 }
+
+
