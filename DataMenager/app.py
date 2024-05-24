@@ -1,3 +1,6 @@
+# DataMenager
+# Author: PAM
+
 from bson import json_util
 from flask import Flask, jsonify, request
 import mysql.connector
@@ -5,29 +8,33 @@ import hashlib
 from flask_swagger import swagger
 from flask_swagger_ui import get_swaggerui_blueprint
 from flask_pymongo import PyMongo
-from flask_basicauth import BasicAuth
+
+MYSQL_IP = '10.141.10.69'
+MONGO_IP = '10.141.10.69'
+APP_PORT = 5002
 
 app = Flask(__name__)
-app.config['MONGO_URI'] = 'mongodb://10.141.10.69:27017/data_db'
+app.config['MONGO_URI'] = f'mongodb://{MONGO_IP}:27017/data_db'
 mongo = PyMongo(app)
-
-# Swagger UI configuration
-SWAGGER_URL = '/swagger'
-API_URL = '/swagger.json'
-swaggerui_blueprint = get_swaggerui_blueprint(
-    SWAGGER_URL,
-    API_URL,
-    config={'app_name': 'User and Hive Management API'}
-)
 
 # Database configuration
 db_config = {
-    'host': '10.141.10.69',
+    'host': MYSQL_IP,
     'port': '3333',
     'user': 'root',
     'password': 'password',
     'database': 'mysql'
 }
+
+# Swagger UI configuration
+SWAGGER_URL = '/swagger'
+API_URL = '/swagger.json'
+
+swaggerui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={'app_name': 'User and Hive Management API'}
+)
 
 
 def get_password_hash(password):
@@ -507,4 +514,4 @@ def swagger_json():
 app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5002)
+    app.run(host='0.0.0.0', port=APP_PORT)
