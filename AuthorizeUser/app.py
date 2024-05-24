@@ -4,13 +4,15 @@
 from flask import Flask, jsonify, request
 import mysql.connector
 import hashlib
-import datetime
+
+MYSQL_IP = '10.141.10.69'
+APP_PORT = 5001
 
 app = Flask(__name__)
 
 # Database configuration
 db_config = {
-    'host': '10.141.10.69',
+    'host': MYSQL_IP,
     'port': '3333',
     'user': 'root',
     'password': 'password',
@@ -69,4 +71,4 @@ def check_credentials():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5001)
+    app.run(host='0.0.0.0')
