@@ -1,21 +1,23 @@
 # MobileApi
 # Author: PAM
 
-from bson import json_util
 import requests
 from datetime import datetime
 from time import time
 from distutils.util import strtobool
 
-from flask import Flask, g, request, jsonify
+from flask import Flask, request, jsonify
 from flask_swagger import swagger
 from flask_swagger_ui import get_swaggerui_blueprint
 from flask_pymongo import PyMongo
 from flask_basicauth import BasicAuth
 import random
 
+PUBSUB_IP = 'pubsub'
+MONGO_IP = 'mongo'
+
 app = Flask(__name__)
-app.config['MONGO_URI'] = 'mongodb://10.141.10.69:27017/data_db'
+app.config['MONGO_URI'] = f'mongodb://{MONGO_IP}:27017/data_db'
 mongo = PyMongo(app)
 
 EXIST = {"$exists": True}
@@ -24,7 +26,7 @@ DESC = [("timestamp", -1)]
 SWAGGER_URL = '/swagger'
 API_URL = '/swagger.json'
 
-PUBSUB_URI = 'http://10.141.10.69:2137'
+PUBSUB_URI = f'http://{PUBSUB_IP}:2137'
 
 
 class CustomBasicAuth(BasicAuth):

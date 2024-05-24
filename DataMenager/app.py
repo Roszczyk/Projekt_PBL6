@@ -9,9 +9,8 @@ from flask_swagger import swagger
 from flask_swagger_ui import get_swaggerui_blueprint
 from flask_pymongo import PyMongo
 
-MYSQL_IP = '10.141.10.69'
-MONGO_IP = '10.141.10.69'
-APP_PORT = 5002
+MYSQL_IP = 'mysql'
+MONGO_IP = 'mongo'
 
 app = Flask(__name__)
 app.config['MONGO_URI'] = f'mongodb://{MONGO_IP}:27017/data_db'
@@ -514,4 +513,4 @@ def swagger_json():
 app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=APP_PORT)
+    app.run(host='0.0.0.0')

@@ -5,27 +5,30 @@ from flask import Flask, jsonify, request
 from flask_swagger import swagger
 from flask_swagger_ui import get_swaggerui_blueprint
 from flask_pymongo import PyMongo
-import mysql.connector
 from threading import Thread
 import requests
 import base64
-from websockets.exceptions import InvalidHandshake
 from websockets.http import Headers
 
+MYSQL_IP = 'mysql'
+MONGO_IP = 'mongo'
+
+AUTHORIZE_IP = 'authorize'
+
 app = Flask(__name__)
-app.config['MONGO_URI'] = 'mongodb://10.141.10.69:27017/data_db'
+app.config['MONGO_URI'] = f'mongodb://{MONGO_IP}:27017/data_db'
 mongo = PyMongo(app)
 
 # Database configuration
 db_config = {
-    'host': '10.141.10.69',
+    'host': MYSQL_IP,
     'port': '3333',
     'user': 'root',
     'password': 'password',
     'database': 'mysql'
 }
 
-auth_service_url = 'http://localhost:5001'
+auth_service_url = f'http://{AUTHORIZE_IP}:5000'
 
 SWAGGER_URL = '/swagger'
 API_URL = '/swagger.json'
@@ -168,7 +171,7 @@ def run_flask():
     )
 
     app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
-    app.run(port=5006)
+    app.run(host='0.0.0.0')
 
 
 async def run_socket_server():

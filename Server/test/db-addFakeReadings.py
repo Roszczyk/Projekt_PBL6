@@ -8,7 +8,7 @@ try:
 finally:
     from datetime import datetime, timedelta
     from example_payload import generate_random_payload
-    from src import app
+    from Server import app
 
 
 def generateFakePayloadTime(session, time="one day") -> dict:

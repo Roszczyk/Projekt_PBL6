@@ -1,10 +1,3 @@
-TO też musi chodzić
-url="https://github.com/aler9/rtsp-simple-server/releases/download/v0.18.2/rtsp-simple-server_v0.18.2_linux_amd64.tar.gz"
-curl  -L $url -O 
-tar -xzf rtsp-simple-server_v0.18.2_linux_amd64.tar.gz
-./rtsp-simple-server
-
-rtmp://10.141.10.69/live
 TA DZIAŁA
 ffmpeg -re -stream_loop -1 -i ./RTMP_Server/Sample_hornet.mp4  \
     -vcodec libx264 -preset:v ultrafast \

@@ -1,11 +1,13 @@
 import cv2
 from flask import Flask, Response
 
+RTMP_SERVER_URI = 'rtmp://127.0.0.1/live'
+
 app = Flask(__name__)
 
 
 def capture_frame():
-    cap = cv2.VideoCapture('rtmp://10.141.10.69/live')
+    cap = cv2.VideoCapture(RTMP_SERVER_URI)
 
     ret, frame = cap.read()
     if not ret:
@@ -28,4 +30,4 @@ def current_frame():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5003)
+    app.run(host='0.0.0.0')

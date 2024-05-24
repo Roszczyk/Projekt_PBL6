@@ -4,6 +4,9 @@ from measurements import measure_temp, measure_humidity, measure_gps, measure_di
 import time
 from threading import Thread
 
+BROKER_IP = 'broker'
+
+
 class DeviceStatus:
     def __init__(self, device_id):
         self.device_id = device_id
@@ -44,7 +47,8 @@ class DeviceStatus:
         print(f"DEVICE ID: {self.device_id}\n")
         print(f"Temperature \n{self.temperature}\n\nHumidity \n{self.humidity}\n")
         print(f'GPS:\nLAT {self.gps["latitude"]}\nLON {self.gps["longitude"]}\n')
-        print(f'Digital INs:\n0: {self.digital_in["digital_in_0"]}\n1: {self.digital_in["digital_in_1"]}\n2: {self.digital_in["digital_in_2"]}\n')
+        print(
+            f'Digital INs:\n0: {self.digital_in["digital_in_0"]}\n1: {self.digital_in["digital_in_1"]}\n2: {self.digital_in["digital_in_2"]}\n')
         print(f'Lights: \n{self.light}\n\nHeating\n{self.heating}\n')
 
 
@@ -53,15 +57,17 @@ if __name__ == "__main__":
     mqtt_password = "readwrite"
     mqtt_listen_topic = "PAM-PBL6-PUB"
     mqtt_publish_topic = "PAM-PBL5-CATCHER"
-    broker_addr = {"ip":"10.141.10.69", "port":1883}
+    broker_addr = {"ip": BROKER_IP, "port": 1883}
 
     dev = DeviceStatus("2")
 
     dev.measure_all()
-    client = broker_subscribe_init(mqtt_listen_topic, broker_addr["ip"], broker_addr["port"], mqtt_user, mqtt_password, dev)
+    client = broker_subscribe_init(
+        mqtt_listen_topic, broker_addr["ip"], broker_addr["port"], mqtt_user, mqtt_password, dev)
 
     thread_sub = Thread(target=broker_subscribe_loop, args=(client,), daemon=True)
-    thread_pub = Thread(target=publish_measurements_thread, args=(dev, broker_addr, mqtt_user, mqtt_password, mqtt_publish_topic), daemon=True)
+    thread_pub = Thread(target=publish_measurements_thread, args=(
+        dev, broker_addr, mqtt_user, mqtt_password, mqtt_publish_topic), daemon=True)
     thread_meas = Thread(target=measure_function, args=(dev,), daemon=True)
 
     thread_sub.start()
@@ -71,4 +77,3 @@ if __name__ == "__main__":
     thread_sub.join()
     thread_pub.join()
     thread_meas.join()
-

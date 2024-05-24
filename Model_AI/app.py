@@ -1,23 +1,24 @@
 import os
 import requests
 import time
-import random
 from pymongo import MongoClient
 from datetime import datetime
 from inference import get_model
-import supervision as sv
 import cv2
-
 from flask import Flask
+
+STREAMER_IP = 'streamer'
+NOTIFICATIONS_IP = 'notifications'
+MONGO_IP = 'mongo'
 
 app = Flask(__name__)
 
 # Configuration
-IMAGE_URL = "http://127.0.0.1:5003/currentframe.jpg"
+IMAGE_URL = f"http://{STREAMER_IP}:5000/currentframe.jpg"
 SAVE_DIRECTORY = "images/"
-NOTIFICATIONS_URL = "http://127.0.0.1:5006/notify"
+NOTIFICATIONS_URL = f"http://{NOTIFICATIONS_IP}:5000/notify"
 
-DB_URL = "10.141.10.69:27017"
+DB_URL = f"{MONGO_IP}:27017"
 DB_NAME = "data_db"
 DB_COLLECTION = "hornet"
 
@@ -36,7 +37,7 @@ def fetch_save_post_image(collection, model):
             # Save image to disk
             with open(filename, 'wb') as f:
                 f.write(response.content)
-            
+
             image = cv2.imread(filename)
 
             if not detect_hornet(model, image):
@@ -67,6 +68,7 @@ def periodic_task(interval):
     while True:
         fetch_save_post_image(collection, model)
         time.sleep(interval)
+
 
 def detect_hornet(model, image):
     results = model.infer(image)
