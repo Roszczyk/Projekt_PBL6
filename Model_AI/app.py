@@ -4,6 +4,9 @@ import time
 import random
 from pymongo import MongoClient
 from datetime import datetime
+from inference import get_model
+import supervision as sv
+import cv2
 
 from flask import Flask
 
@@ -19,7 +22,7 @@ DB_NAME = "data_db"
 DB_COLLECTION = "hornet"
 
 
-def fetch_save_post_image(collection):
+def fetch_save_post_image(collection, model):
     try:
         # Fetch image from URL
         response = requests.get(IMAGE_URL)
@@ -33,14 +36,10 @@ def fetch_save_post_image(collection):
             # Save image to disk
             with open(filename, 'wb') as f:
                 f.write(response.content)
+            
+            image = cv2.imread(filename)
 
-            # AI
-            # AI
-            detection = random.randint(0, 3)
-            # AI
-            # AI
-
-            if detection > 0:
+            if not detect_hornet(model, image):
                 print("No hornet detected.")
                 return
 
@@ -63,10 +62,24 @@ def periodic_task(interval):
     client = MongoClient(DB_URL)
     database = client[DB_NAME]
     collection = database[DB_COLLECTION]
+    model = get_model(model_id="bees-and-hornets/5", api_key="CrSPqvFYNiL2LIDjXDl4")
 
     while True:
-        fetch_save_post_image(collection)
+        fetch_save_post_image(collection, model)
         time.sleep(interval)
+
+def detect_hornet(model, image):
+    results = model.infer(image)
+    results = results[0]
+    predictions = dict(results)["predictions"]
+    detected_animals = []
+
+    for prediction in predictions:
+        detected_animals.append(dict(prediction)["class_name"])
+
+    if "Hornets" in detected_animals:
+        return True
+    return False
 
 
 if __name__ == "__main__":
