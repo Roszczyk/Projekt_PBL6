@@ -9,9 +9,11 @@ for dir in */ ; do
     if [ -f "$dir/Dockerfile" ]; then
         # Extract the subfolder name (remove trailing slash)
         SUBFOLDER_NAME=$(basename "$dir")
+        # Convert the subfolder name to lowercase
+        SUBFOLDER_NAME_LOWER=$(echo "$SUBFOLDER_NAME" | tr '[:upper:]' '[:lower:]')
 
         # Build the Docker image
-        IMAGE_NAME="$DOCKER_USERNAME/$SUBFOLDER_NAME"
+        IMAGE_NAME="$DOCKER_USERNAME/$SUBFOLDER_NAME_LOWER"
         echo "Building Docker image $IMAGE_NAME from $dir"
         docker build -t "$IMAGE_NAME" "$dir"
 
