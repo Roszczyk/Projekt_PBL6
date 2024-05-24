@@ -9,33 +9,30 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
-# Set the base directory to the provided argument
-BASE_DIR="$1"
+# Set the target directory to the provided argument
+TARGET_DIR="$1"
 
 # Ensure the provided path is a directory
-if [ ! -d "$BASE_DIR" ]; then
-    echo "Error: $BASE_DIR is not a directory."
+if [ ! -d "$TARGET_DIR" ]; then
+    echo "Error: $TARGET_DIR is not a directory."
     exit 1
 fi
 
-# Loop through each subdirectory in the provided base directory
-for dir in "$BASE_DIR"/*/ ; do
-    # Check if the directory contains a Dockerfile
-    if [ -f "$dir/Dockerfile" ]; then
-        # Extract the subfolder name (remove trailing slash)
-        SUBFOLDER_NAME=$(basename "$dir")
-        # Convert the subfolder name to lowercase
-        SUBFOLDER_NAME_LOWER=$(echo "$SUBFOLDER_NAME" | tr '[:upper:]' '[:lower:]')
+# Check if the directory contains a Dockerfile
+if [ -f "$TARGET_DIR/Dockerfile" ]; then
+    # Extract the folder name (remove trailing slash if any)
+    FOLDER_NAME=$(basename "$TARGET_DIR")
+    # Convert the folder name to lowercase
+    FOLDER_NAME_LOWER=$(echo "$FOLDER_NAME" | tr '[:upper:]' '[:lower:]')
 
-        # Build the Docker image
-        IMAGE_NAME="$DOCKER_USERNAME/$SUBFOLDER_NAME_LOWER"
-        echo "Building Docker image $IMAGE_NAME from $dir"
-        docker build -t "$IMAGE_NAME" "$dir"
+    # Build the Docker image
+    IMAGE_NAME="$DOCKER_USERNAME/$FOLDER_NAME_LOWER"
+    echo "Building Docker image $IMAGE_NAME from $TARGET_DIR"
+    docker build -t "$IMAGE_NAME" "$TARGET_DIR"
 
-        # Push the Docker image to Docker Hub
-        echo "Pushing Docker image $IMAGE_NAME to Docker Hub"
-        docker push "$IMAGE_NAME"
-    else
-        echo "No Dockerfile found in $dir, skipping..."
-    fi
-done
+    # Push the Docker image to Docker Hub
+    echo "Pushing Docker image $IMAGE_NAME to Docker Hub"
+    docker push "$IMAGE_NAME"
+else
+    echo "No Dockerfile found in $TARGET_DIR, skipping..."
+fi
