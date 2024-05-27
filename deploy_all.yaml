@@ -1,0 +1,171 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pam-ns
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: multi-app-deployment
+  namespace: pam-ns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: multi-app
+  template:
+    metadata:
+      labels:
+        app: multi-app
+    spec:
+      containers:
+      - name: pubsub
+        image: piotrsicinski/pubsub:latest
+        ports:
+        - containerPort: 8080
+      - name: streamer
+        image: piotrsicinski/streamer:latest
+        ports:
+        - containerPort: 8081
+      - name: server
+        image: piotrsicinski/server:latest
+        ports:
+        - containerPort: 8082
+      - name: notifications
+        image: piotrsicinski/notifications:latest
+        ports:
+        - containerPort: 8084
+      - name: model-ai
+        image: piotrsicinski/model_ai:latest
+        ports:
+        - containerPort: 8085
+      - name: datamenager
+        image: piotrsicinski/datamenager:latest
+        ports:
+        - containerPort: 8086
+      - name: authorizeuser
+        image: piotrsicinski/authorizeuser:latest
+        ports:
+        - containerPort: 8087
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: pubsub-service
+  namespace: pam-ns
+spec:
+  selector:
+    app: multi-app
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
+    nodePort: 30000
+  type: NodePort
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: streamer-service
+  namespace: pam-ns
+spec:
+  selector:
+    app: multi-app
+  ports:
+  - protocol: TCP
+    port: 8081
+    targetPort: 8081
+    nodePort: 30001
+  type: NodePort
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: server-service
+  namespace: pam-ns
+spec:
+  selector:
+    app: multi-app
+  ports:
+  - protocol: TCP
+    port: 8082
+    targetPort: 8082
+    nodePort: 30002
+  type: NodePort
+
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: notifications-service
+  namespace: pam-ns
+spec:
+  selector:
+    app: multi-app
+  ports:
+  - protocol: TCP
+    port: 8084
+    targetPort: 8084
+    nodePort: 30004
+  type: NodePort
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: model-ai-service
+  namespace: pam-ns
+spec:
+  selector:
+    app: multi-app
+  ports:
+  - protocol: TCP
+    port: 8085
+    targetPort: 8085
+    nodePort: 30005
+  type: NodePort
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: datamenager-service
+  namespace: pam-ns
+spec:
+  selector:
+    app: multi-app
+  ports:
+  - protocol: TCP
+    port: 8086
+    targetPort: 8086
+    nodePort: 30006
+  type: NodePort
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: authorizeuser-service
+  namespace: pam-ns
+spec:
+  selector:
+    app: multi-app
+  ports:
+  - protocol: TCP
+    port: 8087
+    targetPort: 8087
+    nodePort: 30007
+  type: NodePort
