@@ -22,7 +22,6 @@ def on_message(client, userdata, message, dev):
     raw_command = f"""{message.payload.decode("utf-8")}""".replace("'", '"')
     print(raw_command)
     execute_command(raw_command, dev)
-    # dev.print_all()
     
 
 def broker_publish(message, topic, broker_ip, broker_port, username, password):
