@@ -1,11 +1,14 @@
 TA DZIAŁA
-ffmpeg -re -stream_loop -1 -i ./RTMP_Server/Sample_hornet.mp4  \
+ffmpeg -re -stream_loop -1 -i ./ffmpeg/Sample_hornet.mp4  \
     -vcodec libx264 -preset:v ultrafast \
     -acodec aac \
-    -f flv rtmp://127.0.0.1/live
+    -f flv rtmp://10.141.10.69/live
 
-
-
+KAMERA
+ffmpeg -f v4l2 -i /dev/video0  \
+    -vcodec libx264 -preset:v ultrafast \
+    -acodec aac \
+    -f flv rtmp://10.141.10.69/live
 
 
 
