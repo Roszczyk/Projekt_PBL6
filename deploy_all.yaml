@@ -322,3 +322,87 @@ spec:
     targetPort: 5000
     nodePort: 30008
   type: NodePort
+
+# ##################################################
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-deployment
+  namespace: pam-ns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo
+  template:
+    metadata:
+      labels:
+        app: mongo
+    spec:
+      containers:
+      - name: mongo
+        image: mongodb/mongodb-community-server
+        ports:
+        - containerPort: 27017
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-service
+  namespace: pam-ns
+spec:
+  selector:
+    app: mongo
+  ports:
+  - protocol: TCP
+    port: 27017
+    targetPort: 27017
+    nodePort: 27017
+  type: NodePort
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-deployment
+  namespace: pam-ns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mariadb:latest
+        ports:
+        - containerPort: 3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "password"
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-service
+  namespace: pam-ns
+spec:
+  selector:
+    app: mysql
+  ports:
+  - protocol: TCP
+    port: 3333
+    targetPort: 3306
+    nodePort: 33333
+  type: NodePort
