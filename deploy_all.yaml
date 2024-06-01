@@ -361,7 +361,7 @@ spec:
   - protocol: TCP
     port: 27017
     targetPort: 27017
-    nodePort: 27017
+    nodePort: 32717
   type: NodePort
 
 ---
@@ -404,5 +404,5 @@ spec:
   - protocol: TCP
     port: 3333
     targetPort: 3306
-    nodePort: 33333
+    nodePort: 30333
   type: NodePort
