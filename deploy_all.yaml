@@ -24,7 +24,7 @@ spec:
       - name: pubsub
         image: piotrsicinski/pubsub:latest
         ports:
-        - containerPort: 8080
+        - containerPort: 5000
 
 ---
 
@@ -38,8 +38,8 @@ spec:
     app: pubsub
   ports:
   - protocol: TCP
-    port: 8080
-    targetPort: 8080
+    port: 5000
+    targetPort: 5000
     nodePort: 30001
   type: NodePort
 
@@ -64,7 +64,7 @@ spec:
       - name: streamer
         image: piotrsicinski/streamer:latest
         ports:
-        - containerPort: 8081
+        - containerPort: 5000
 
 ---
 
@@ -78,8 +78,8 @@ spec:
     app: streamer
   ports:
   - protocol: TCP
-    port: 8081
-    targetPort: 8081
+    port: 5000
+    targetPort: 5000
     nodePort: 30002
   type: NodePort
 
@@ -104,7 +104,7 @@ spec:
       - name: server
         image: piotrsicinski/server:latest
         ports:
-        - containerPort: 8082
+        - containerPort: 5000
 
 ---
 
@@ -118,50 +118,50 @@ spec:
     app: server
   ports:
   - protocol: TCP
-    port: 8082
-    targetPort: 8082
+    port: 5000
+    targetPort: 5000
     nodePort: 30003
   type: NodePort
 
----
+# ---
 
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: pam-base-deployment
-  namespace: pam-ns
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: pam-base
-  template:
-    metadata:
-      labels:
-        app: pam-base
-    spec:
-      containers:
-      - name: pam-base
-        image: piotrsicinski/pam-base:latest
-        ports:
-        - containerPort: 8083
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: pam-base-deployment
+#   namespace: pam-ns
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: pam-base
+#   template:
+#     metadata:
+#       labels:
+#         app: pam-base
+#     spec:
+#       containers:
+#       - name: pam-base
+#         image: piotrsicinski/pam-base:latest
+#         ports:
+#         - containerPort: 8083
 
----
+# ---
 
-apiVersion: v1
-kind: Service
-metadata:
-  name: pam-base-service
-  namespace: pam-ns
-spec:
-  selector:
-    app: pam-base
-  ports:
-  - protocol: TCP
-    port: 8083
-    targetPort: 8083
-    nodePort: 30004
-  type: NodePort
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: pam-base-service
+#   namespace: pam-ns
+# spec:
+#   selector:
+#     app: pam-base
+#   ports:
+#   - protocol: TCP
+#     port: 8083
+#     targetPort: 8083
+#     nodePort: 30004
+#   type: NodePort
 
 ---
 
@@ -184,7 +184,7 @@ spec:
       - name: notifications
         image: piotrsicinski/notifications:latest
         ports:
-        - containerPort: 8084
+        - containerPort: 5000
 
 ---
 
@@ -198,8 +198,8 @@ spec:
     app: notifications
   ports:
   - protocol: TCP
-    port: 8084
-    targetPort: 8084
+    port: 5000
+    targetPort: 5000
     nodePort: 30005
   type: NodePort
 
@@ -224,7 +224,7 @@ spec:
       - name: model-ai
         image: piotrsicinski/model_ai:latest
         ports:
-        - containerPort: 8085
+        - containerPort: 5000
 
 ---
 
@@ -238,8 +238,8 @@ spec:
     app: model-ai
   ports:
   - protocol: TCP
-    port: 8085
-    targetPort: 8085
+    port: 5000
+    targetPort: 5000
     nodePort: 30006
   type: NodePort
 
@@ -264,7 +264,7 @@ spec:
       - name: datamenager
         image: piotrsicinski/datamenager:latest
         ports:
-        - containerPort: 8086
+        - containerPort: 5000
 
 ---
 
@@ -278,8 +278,8 @@ spec:
     app: datamenager
   ports:
   - protocol: TCP
-    port: 8086
-    targetPort: 8086
+    port: 5000
+    targetPort: 5000
     nodePort: 30007
   type: NodePort
 
@@ -304,7 +304,7 @@ spec:
       - name: authorizeuser
         image: piotrsicinski/authorizeuser:latest
         ports:
-        - containerPort: 8087
+        - containerPort: 5000
 
 ---
 
@@ -318,7 +318,7 @@ spec:
     app: authorizeuser
   ports:
   - protocol: TCP
-    port: 8087
-    targetPort: 8087
+    port: 5000
+    targetPort: 5000
     nodePort: 30008
   type: NodePort

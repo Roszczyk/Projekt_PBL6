@@ -26,7 +26,7 @@ if __name__ == "__main__":
 
     database_addr = f"{MONGO_IP}:27017"
     broker_addr = {"ip": BROKER_IP, "port": 1883}
-    http_port = 2137
+    http_port = 5000
 
     database_base = "test"
     database_collection = "test"

@@ -26,7 +26,7 @@ DESC = [("timestamp", -1)]
 SWAGGER_URL = '/swagger'
 API_URL = '/swagger.json'
 
-PUBSUB_URI = f'http://{PUBSUB_IP}:2137'
+PUBSUB_URI = f'http://{PUBSUB_IP}:5000'
 
 
 class CustomBasicAuth(BasicAuth):
