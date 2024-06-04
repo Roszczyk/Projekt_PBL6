@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # Docker Hub username
-DOCKER_USERNAME="piotrsicinski"
+# DOCKER_REPO="piotrsicinski"
+DOCKER_REPO="10.141.10.69:5000"
 
 # Check if the path is provided as an argument
 if [ -z "$1" ]; then
@@ -26,7 +27,7 @@ if [ -f "$TARGET_DIR/Dockerfile" ]; then
     FOLDER_NAME_LOWER=$(echo "$FOLDER_NAME" | tr '[:upper:]' '[:lower:]')
 
     # Build the Docker image
-    IMAGE_NAME="$DOCKER_USERNAME/$FOLDER_NAME_LOWER"
+    IMAGE_NAME="$DOCKER_REPO/$FOLDER_NAME_LOWER"
     echo "Building Docker image $IMAGE_NAME from $TARGET_DIR"
     docker build -t "$IMAGE_NAME" "$TARGET_DIR"
 

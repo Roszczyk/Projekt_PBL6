@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # Docker Hub username
-DOCKER_USERNAME="piotrsicinski"
+# DOCKER_REPO="piotrsicinski"
+DOCKER_REPO="10.141.10.69:5000"
 
 # Loop through each subdirectory
 for dir in */ ; do
@@ -13,7 +14,7 @@ for dir in */ ; do
         SUBFOLDER_NAME_LOWER=$(echo "$SUBFOLDER_NAME" | tr '[:upper:]' '[:lower:]')
 
         # Build the Docker image
-        IMAGE_NAME="$DOCKER_USERNAME/$SUBFOLDER_NAME_LOWER"
+        IMAGE_NAME="$DOCKER_REPO/$SUBFOLDER_NAME_LOWER"
         echo "Building Docker image $IMAGE_NAME from $dir"
         docker build -t "$IMAGE_NAME" "$dir"
 
