@@ -23,6 +23,7 @@ spec:
       containers:
       - name: pubsub
         image: piotrsicinski/pubsub:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 5000
 
@@ -63,6 +64,7 @@ spec:
       containers:
       - name: streamer
         image: piotrsicinski/streamer:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 5000
 
@@ -103,6 +105,7 @@ spec:
       containers:
       - name: server
         image: piotrsicinski/server:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 5000
 
@@ -183,6 +186,7 @@ spec:
       containers:
       - name: notifications
         image: piotrsicinski/notifications:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 5000
 
@@ -223,6 +227,7 @@ spec:
       containers:
       - name: model-ai
         image: piotrsicinski/model_ai:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 5000
 
@@ -263,6 +268,7 @@ spec:
       containers:
       - name: datamenager
         image: piotrsicinski/datamenager:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 5000
 
@@ -303,6 +309,7 @@ spec:
       containers:
       - name: authorizeuser
         image: piotrsicinski/authorizeuser:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 5000
 
@@ -344,6 +351,7 @@ spec:
       containers:
       - name: mongo
         image: mongodb/mongodb-community-server
+        imagePullPolicy: Always
         ports:
         - containerPort: 27017
 
@@ -384,6 +392,7 @@ spec:
       containers:
       - name: mysql
         image: mariadb:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 3306
         env:
