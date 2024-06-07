@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Docker Hub username
-# DOCKER_REPO="piotrsicinski"
-DOCKER_REPO="piotrsicinski"
+# DOCKER_REPO="docker.io/piotrsicinski"
+DOCKER_REPO="docker.io/piotrsicinski"
 
 # Check if the path is provided as an argument
 if [ -z "$1" ]; then

@@ -1,5 +1,5 @@
+# docker.io/docker.io/piotrsicinski
 # docker.io/piotrsicinski
-# piotrsicinski
 
 apiVersion: v1
 kind: Namespace
@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
       - name: pubsub
-        image: piotrsicinski/pubsub:latest
+        image: docker.io/piotrsicinski/pubsub:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
@@ -66,7 +66,7 @@ spec:
     spec:
       containers:
       - name: streamer
-        image: piotrsicinski/streamer:latest
+        image: docker.io/piotrsicinski/streamer:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
@@ -107,7 +107,7 @@ spec:
     spec:
       containers:
       - name: server
-        image: piotrsicinski/server:latest
+        image: docker.io/piotrsicinski/server:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
@@ -148,7 +148,7 @@ spec:
 #     spec:
 #       containers:
 #       - name: pam-base
-#         image: piotrsicinski/pam-base:latest
+#         image: docker.io/piotrsicinski/pam-base:latest
 #         ports:
 #         - containerPort: 8083
 
@@ -188,7 +188,7 @@ spec:
     spec:
       containers:
       - name: notifications
-        image: piotrsicinski/notifications:latest
+        image: docker.io/piotrsicinski/notifications:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
@@ -229,7 +229,7 @@ spec:
     spec:
       containers:
       - name: model-ai
-        image: piotrsicinski/model_ai:latest
+        image: docker.io/piotrsicinski/model_ai:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
@@ -270,7 +270,7 @@ spec:
     spec:
       containers:
       - name: datamenager
-        image: piotrsicinski/datamenager:latest
+        image: docker.io/piotrsicinski/datamenager:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
@@ -311,7 +311,7 @@ spec:
     spec:
       containers:
       - name: authorizeuser
-        image: piotrsicinski/authorizeuser:latest
+        image: docker.io/piotrsicinski/authorizeuser:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
