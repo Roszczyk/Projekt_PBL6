@@ -1,4 +1,4 @@
-FROM piotrsicinski/pam-base:latest
+FROM piotrsicinski/pam-base:1.0
 
 WORKDIR /app
 
