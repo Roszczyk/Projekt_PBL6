@@ -2,7 +2,7 @@
 
 # Docker Hub username
 # DOCKER_REPO="piotrsicinski"
-DOCKER_REPO="10.141.10.69:5000"
+DOCKER_REPO="piotrsicinski"
 
 # Check if the path is provided as an argument
 if [ -z "$1" ]; then
