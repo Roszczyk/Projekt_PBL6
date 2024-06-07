@@ -7,7 +7,7 @@ import signal
 import sys
 
 MONGO_IP = 'mongo'
-BROKER_IP = 'broker'
+BROKER_IP = 'mosquitto'
 
 
 def signal_handler(sig, frame):
