@@ -1,4 +1,4 @@
-FROM docker.io/piotrsicinski/pam-base:latest
+FROM piotrsicinski/pam-base:latest
 
 WORKDIR /app
 

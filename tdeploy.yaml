@@ -1,5 +1,5 @@
-# docker.io/docker.io/piotrsicinski
 # docker.io/piotrsicinski
+# piotrsicinski
 
 apiVersion: v1
 kind: Namespace
@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
       - name: server
-        image: docker.io/piotrsicinski/server:latest
+        image: piotrsicinski/server:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
