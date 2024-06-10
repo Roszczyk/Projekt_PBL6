@@ -15,11 +15,11 @@ spec:
     spec:
       containers:
       - name: ubuntu
-        image: ubuntu:latest
+        image: ubuntu:22.04
         imagePullPolicy: Always
         command: ["/bin/bash", "-c", "--"]
         args: [
-          "apt-get update && apt-get install -y iputils-ping && apt-get install -y net-tools\
+          "apt-get update && apt-get install -y iputils-ping && apt-get install -y net-tools && \
           while true; do echo hello; sleep 10; done;"
         ]
         ports:
