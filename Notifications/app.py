@@ -10,10 +10,10 @@ import requests
 import base64
 from websockets.http import Headers
 
-MYSQL_IP = 'mysql'
-MONGO_IP = 'mongo'
+MYSQL_IP = 'mysql-service'
+MONGO_IP = 'mongo-service'
 
-AUTHORIZE_IP = 'authorize'
+AUTHORIZE_IP = 'authorize-service'
 
 app = Flask(__name__)
 app.config['MONGO_URI'] = f'mongodb://{MONGO_IP}:27017/data_db'

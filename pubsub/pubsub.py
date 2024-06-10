@@ -6,8 +6,8 @@ from threading import Thread
 import signal
 import sys
 
-MONGO_IP = 'mongo'
-BROKER_IP = 'mosquitto'
+MONGO_IP = 'mongo-service'
+BROKER_IP = 'mosquitto-service'
 
 
 def signal_handler(sig, frame):

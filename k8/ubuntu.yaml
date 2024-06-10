@@ -19,7 +19,7 @@ spec:
         imagePullPolicy: Always
         command: ["/bin/bash", "-c", "--"]
         args: [
-          "apt-get update && apt-get install -y iputils-ping && apt-get install -y net-tools && \
+          "apt-get update && apt-get install -y iputils-ping && apt-get install -y net-tools && apt-get install -y curl && \
           while true; do echo hello; sleep 10; done;"
         ]
         ports:

@@ -13,8 +13,8 @@ from flask_pymongo import PyMongo
 from flask_basicauth import BasicAuth
 import random
 
-PUBSUB_IP = 'pubsub'
-MONGO_IP = 'mongo'
+PUBSUB_IP = 'pubsub-service'
+MONGO_IP = 'mongo-service'
 
 app = Flask(__name__)
 app.config['MONGO_URI'] = f'mongodb://{MONGO_IP}:27017/data_db'

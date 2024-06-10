@@ -9,8 +9,8 @@ from flask_swagger import swagger
 from flask_swagger_ui import get_swaggerui_blueprint
 from flask_pymongo import PyMongo
 
-MYSQL_IP = 'mysql'
-MONGO_IP = 'mongo'
+MYSQL_IP = 'mysql-service'
+MONGO_IP = 'mongo-service'
 
 app = Flask(__name__)
 app.config['MONGO_URI'] = f'mongodb://{MONGO_IP}:27017/data_db'
