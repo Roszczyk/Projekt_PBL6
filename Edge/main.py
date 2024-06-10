@@ -4,7 +4,7 @@ from measurements import measure_temp, measure_humidity, measure_gps, measure_di
 import time
 from threading import Thread
 
-BROKER_IP = 'broker'
+BROKER_IP = 'broker-service'
 
 
 class DeviceStatus:

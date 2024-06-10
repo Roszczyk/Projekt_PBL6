@@ -5,7 +5,7 @@ from flask import Flask, jsonify, request
 import mysql.connector
 import hashlib
 
-MYSQL_IP = 'mysql'
+MYSQL_IP = 'mysql-service'
 
 app = Flask(__name__)
 

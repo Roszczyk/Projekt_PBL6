@@ -7,9 +7,9 @@ from inference import get_model
 import cv2
 from flask import Flask
 
-STREAMER_IP = 'streamer'
-NOTIFICATIONS_IP = 'notifications'
-MONGO_IP = 'mongo'
+STREAMER_IP = 'streamer-service'
+NOTIFICATIONS_IP = 'notifications-service'
+MONGO_IP = 'mongo-service'
 
 app = Flask(__name__)
 
