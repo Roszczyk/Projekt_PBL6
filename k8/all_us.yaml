@@ -1,6 +1,72 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  name: server-deployment
+  namespace: pam-ns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: server
+  template:
+    metadata:
+      labels:
+        app: server
+    spec:
+      containers:
+      - name: server
+        image: piotrsicinski/server:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "200Mi"
+          limits:
+            cpu: "500m"
+            memory: "500Mi"
+      imagePullSecrets:
+      - name: docker-secret
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: server-service
+  namespace: pam-ns
+spec:
+  selector:
+    app: server
+  ports:
+  - protocol: TCP
+    port: 5000
+    targetPort: 5000
+    nodePort: 30003
+  type: NodePort
+
+---
+
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: server-hpa
+  namespace: pam-ns
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: server-deployment
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 50
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
   name: pubsub-deployment
   namespace: pam-ns
 spec:
@@ -80,49 +146,6 @@ spec:
     port: 5000
     targetPort: 5000
     nodePort: 30002
-  type: NodePort
-
----
-
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: server-deployment
-  namespace: pam-ns
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: server
-  template:
-    metadata:
-      labels:
-        app: server
-    spec:
-      containers:
-      - name: server
-        image: piotrsicinski/server:latest
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 5000
-      imagePullSecrets:
-      - name: docker-secret
-
----
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: server-service
-  namespace: pam-ns
-spec:
-  selector:
-    app: server
-  ports:
-  - protocol: TCP
-    port: 5000
-    targetPort: 5000
-    nodePort: 30003
   type: NodePort
 
 ---
