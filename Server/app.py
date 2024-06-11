@@ -403,4 +403,4 @@ if __name__ == '__main__':
     )
 
     app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
-    app.run(debug=True)
+    app.run(host='0.0.0.0')
