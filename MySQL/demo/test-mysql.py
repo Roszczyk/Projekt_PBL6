@@ -1,8 +1,10 @@
 import mysql.connector
 
+MYSQL_IP = 'mysql-service'
+
 # Database configuration
 db_config = {
-    'host': '10.141.10.69',
+    'host': MYSQL_IP,
     'port': '3333',
     'user': 'root',
     'password': 'password',

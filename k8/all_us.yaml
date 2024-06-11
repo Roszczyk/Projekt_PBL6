@@ -166,6 +166,12 @@ spec:
     port: 5000
     targetPort: 5000
     nodePort: 30005
+    name: http
+  - protocol: TCP
+    port: 8765
+    targetPort: 8765
+    nodePort: 30765
+    name: websocket
   type: NodePort
 
 ---
