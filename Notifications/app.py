@@ -175,7 +175,7 @@ def run_flask():
 
 
 async def run_socket_server():
-    server = await websockets.serve(handler, "localhost", 8765)
+    server = await websockets.serve(handler, '0.0.0.0', 8765)
     await server.wait_closed()
 
 if __name__ == "__main__":
