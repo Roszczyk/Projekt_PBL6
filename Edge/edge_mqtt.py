@@ -15,7 +15,7 @@ def execute_command(message : str, dev):
         if payload["heating"] != None:
             new_state = (payload["heating"] == "True")
             dev.change_heating(new_state)
-    dev.print_all()
+        dev.print_all()
 
 
 def on_message(client, userdata, message, dev):

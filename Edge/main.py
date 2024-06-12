@@ -4,7 +4,11 @@ from measurements import measure_temp, measure_humidity, measure_gps, measure_di
 import time
 from threading import Thread
 
-BROKER_IP = 'broker'
+# BROKER_IP = 'broker'
+# BROKER_PORT = 1883
+
+BROKER_IP = "10.141.10.74"
+BROKER_PORT = 31111
 
 
 class DeviceStatus:
@@ -52,14 +56,14 @@ class DeviceStatus:
         print(f'Lights: \n{self.light}\n\nHeating\n{self.heating}\n')
 
 
-if __name__ == "__main__":
+def run(device_id):
     mqtt_user = "rw"
     mqtt_password = "readwrite"
     mqtt_listen_topic = "PAM-PBL6-PUB"
     mqtt_publish_topic = "PAM-PBL5-CATCHER"
-    broker_addr = {"ip": BROKER_IP, "port": 1883}
+    broker_addr = {"ip": BROKER_IP, "port": BROKER_PORT}
 
-    dev = DeviceStatus("2")
+    dev = DeviceStatus(device_id)
 
     dev.measure_all()
     client = broker_subscribe_init(
@@ -77,3 +81,6 @@ if __name__ == "__main__":
     thread_sub.join()
     thread_pub.join()
     thread_meas.join()
+
+if __name__ == "__main__":
+    run("2")
