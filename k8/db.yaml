@@ -58,7 +58,7 @@ spec:
     spec:
       containers:
       - name: mysql
-        image: docker.io/mariadb:latest
+        image: mariadb
         imagePullPolicy: Always
         ports:
         - containerPort: 3306

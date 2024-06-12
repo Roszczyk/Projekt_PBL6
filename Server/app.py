@@ -13,8 +13,9 @@ from flask_pymongo import PyMongo
 from flask_basicauth import BasicAuth
 import random
 
-PUBSUB_IP = 'pubsub'
-MONGO_IP = 'mongo'
+PUBSUB_IP = 'pubsub-service'
+MONGO_IP = 'mongo-service'
+AUTHORIZEUSER_IP = 'authorizeuser-service'
 
 app = Flask(__name__)
 app.config['MONGO_URI'] = f'mongodb://{MONGO_IP}:27017/data_db'
@@ -46,7 +47,7 @@ class CustomBasicAuth(BasicAuth):
     #     return (username == 'admin' and password == 'admin') or (username == 'username' and password == 'password')
 
 
-auth_service_url = 'http://localhost:5001'
+auth_service_url = f'http://{AUTHORIZEUSER_IP}:5000'
 custom_basic_auth = CustomBasicAuth(app, auth_service_url)
 
 
@@ -403,4 +404,4 @@ if __name__ == '__main__':
     )
 
     app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
-    app.run(debug=True)
+    app.run(host='0.0.0.0')

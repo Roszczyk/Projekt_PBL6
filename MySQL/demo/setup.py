@@ -1,6 +1,8 @@
 import mysql.connector
 import hashlib
 
+MYSQL_IP = 'mysql-service'
+
 
 def get_hash(string):
     return hashlib.sha256(string.encode()).hexdigest()
@@ -26,7 +28,7 @@ def insert_user(cursor, username, password_hash):
 def main():
     # MySQL connection configuration
     db_config = {
-        'host': '10.141.10.69',
+        'host': MYSQL_IP,
         'port': '3333',
         'user': 'root',
         'password': 'password',
