@@ -85,6 +85,13 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "200Mi"
+          limits:
+            cpu: "500m"
+            memory: "500Mi"
       imagePullSecrets:
       - name: docker-secret
 
@@ -128,6 +135,13 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "200Mi"
+          limits:
+            cpu: "500m"
+            memory: "500Mi"
       imagePullSecrets:
       - name: docker-secret
 
@@ -171,6 +185,13 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "200Mi"
+          limits:
+            cpu: "500m"
+            memory: "500Mi"
       imagePullSecrets:
       - name: docker-secret
 
@@ -220,6 +241,13 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "200Mi"
+          limits:
+            cpu: "500m"
+            memory: "500Mi"
       imagePullSecrets:
       - name: docker-secret
 
@@ -263,6 +291,13 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "200Mi"
+          limits:
+            cpu: "500m"
+            memory: "500Mi"
       imagePullSecrets:
       - name: docker-secret
 
@@ -306,6 +341,13 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "200Mi"
+          limits:
+            cpu: "500m"
+            memory: "500Mi"
       imagePullSecrets:
       - name: docker-secret
 
