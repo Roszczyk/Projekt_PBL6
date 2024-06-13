@@ -217,53 +217,53 @@ def get_sensors(device_id):
                         type: boolean
     """
 
-    # data_tempHum = mongo.db.telemetry.find_one(
-    #     {"temperature": EXIST, "humidity": EXIST, "device_id": device_id}, sort=DESC)
-    # data_gps = mongo.db.telemetry.find_one({"gps_lat": EXIST, "gps_lon": EXIST, "device_id": device_id}, sort=DESC)
-    # data_digital_in = mongo.db.telemetry.find_one({"digital_in": EXIST, "device_id": device_id}, sort=DESC)
-    # data_noise = mongo.db.telemetry.find_one({"noise": EXIST, "device_id": device_id}, sort=DESC)
+    data_tempHum = mongo.db.telemetry.find_one(
+        {"temperature": EXIST, "humidity": EXIST, "device_id": device_id}, sort=DESC)
+    data_gps = mongo.db.telemetry.find_one({"gps_lat": EXIST, "gps_lon": EXIST, "device_id": device_id}, sort=DESC)
+    data_digital_in = mongo.db.telemetry.find_one({"digital_in": EXIST, "device_id": device_id}, sort=DESC)
+    data_noise = mongo.db.telemetry.find_one({"noise": EXIST, "device_id": device_id}, sort=DESC)
 
-    # sensor_data = SensorData(device_id=device_id, timestamp=datetime.now())
+    sensor_data = SensorData(device_id=device_id, timestamp=datetime.now())
 
-    # if data_tempHum:
-    #     sensor_data.temperature = data_tempHum['temperature']
-    #     sensor_data.humidity = data_tempHum['humidity']
+    if data_tempHum:
+        sensor_data.temperature = data_tempHum['temperature']
+        sensor_data.humidity = data_tempHum['humidity']
 
-    # if data_gps:
-    #     sensor_data.gps_lat = data_gps['gps_lat']
-    #     sensor_data.gps_lon = data_gps['gps_lon']
+    if data_gps:
+        sensor_data.gps_lat = data_gps['gps_lat']
+        sensor_data.gps_lon = data_gps['gps_lon']
 
-    # if data_digital_in:
-    #     sensor_data.digital_in = data_digital_in['digital_in']
+    if data_digital_in:
+        sensor_data.digital_in = data_digital_in['digital_in']
 
-    # if data_noise:
-    #     sensor_data.noise = data_noise['noise']
-    #     sensor_data.activity = data_noise['activity']
+    if data_noise:
+        sensor_data.noise = data_noise['noise']
+        sensor_data.activity = data_noise['activity']
 
-    # cmd_lights = mongo.db.commands.find_one({"lights": EXIST, "device_id": device_id}, sort=DESC)
-    # cmd_heating = mongo.db.commands.find_one({"heating": EXIST, "device_id": device_id}, sort=DESC)
+    cmd_lights = mongo.db.commands.find_one({"lights": EXIST, "device_id": device_id}, sort=DESC)
+    cmd_heating = mongo.db.commands.find_one({"heating": EXIST, "device_id": device_id}, sort=DESC)
 
-    # if cmd_lights:
-    #     sensor_data.lights = cmd_lights['lights']
-    # if cmd_heating:
-    #     sensor_data.heating = cmd_heating['heating']
+    if cmd_lights:
+        sensor_data.lights = cmd_lights['lights']
+    if cmd_heating:
+        sensor_data.heating = cmd_heating['heating']
 
-    # print(time(), sensor_data.__dict__)
-    # return jsonify(sensor_data.__dict__)
+    print(time(), sensor_data.__dict__)
+    return jsonify(sensor_data.__dict__)
 
-    result = {
-        'temperature': random.uniform(-10, 40),  # Random temperature between -10 and 40 Celsius
-        'humidity': random.uniform(0, 100),     # Random humidity between 0% and 100%
-        'gps_lat': random.uniform(-90, 90),      # Random latitude between -90 and 90
-        'gps_lon': random.uniform(-180, 180),    # Random longitude between -180 and 180
-        'digital_in': random.choice([True, False]),  # Random digital input (True or False)
-        'noise': random.choice([True, False]),   # Random noise state (True or False)
-        'activity': random.choice([True, False]),  # Random activity state (True or False)
-        'lights': random.choice([True, False]),  # Random lights state (True or False)
-        'heating': random.choice([True, False])  # Random heating state (True or False)
-    }
+    # result = {
+    #     'temperature': random.uniform(-10, 40),  # Random temperature between -10 and 40 Celsius
+    #     'humidity': random.uniform(0, 100),     # Random humidity between 0% and 100%
+    #     'gps_lat': random.uniform(-90, 90),      # Random latitude between -90 and 90
+    #     'gps_lon': random.uniform(-180, 180),    # Random longitude between -180 and 180
+    #     'digital_in': random.choice([True, False]),  # Random digital input (True or False)
+    #     'noise': random.choice([True, False]),   # Random noise state (True or False)
+    #     'activity': random.choice([True, False]),  # Random activity state (True or False)
+    #     'lights': random.choice([True, False]),  # Random lights state (True or False)
+    #     'heating': random.choice([True, False])  # Random heating state (True or False)
+    # }
 
-    return jsonify(result)
+    # return jsonify(result)
 
 
 @app.route('/<device_id>/gps', methods=['GET'])
