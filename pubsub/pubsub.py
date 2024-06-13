@@ -28,8 +28,8 @@ if __name__ == "__main__":
     broker_addr = {"ip": BROKER_IP, "port": 1883}
     http_port = 5000
 
-    database_base = "test"
-    database_collection = "test"
+    database_base = "db"
+    database_collection = "telemetry"
 
     mqtt_user = "rw"
     mqtt_password = "readwrite"
