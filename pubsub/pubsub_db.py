@@ -25,6 +25,9 @@ def parse_received_date(date):
 
 
 def payload_format(payload: str):
+
+    payload = payload.lstrip("b'").rstrip("'")
+
     document = dict()
     payload = json.loads(payload)
 

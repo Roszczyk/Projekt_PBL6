@@ -8,7 +8,8 @@ import sys
 
 MONGO_IP = 'mongo-service'
 BROKER_IP = 'mosquitto-service'
-# MONGO_IP = BROKER_IP = '10.141.10.72'
+# MONGO_IP = '10.141.10.72'
+# BROKER_IP = '10.141.10.72'
 
 
 def signal_handler(sig, frame):

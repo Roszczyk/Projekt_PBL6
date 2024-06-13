@@ -5,6 +5,7 @@ import time
 
 def on_message_db(client, userdata, message, db_addr, db_base, db_collection):
     print(f"received message: \n{message.payload}")
+    print(f"Type of message: {type(message.payload)}")
     formated_message = payload_format(f"""{message.payload}""")
     print(f"formated message: \n{formated_message}")
     add_to_database(formated_message, db_addr, db_base, db_collection)
