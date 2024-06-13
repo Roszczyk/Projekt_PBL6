@@ -28,7 +28,7 @@ db_config = {
     'database': 'mysql'
 }
 
-auth_service_url = f'http://{AUTHORIZE_IP}:5000'
+auth_service_url = f'http://{AUTHORIZEUSER_IP}:5000'
 
 SWAGGER_URL = '/swagger'
 API_URL = '/swagger.json'

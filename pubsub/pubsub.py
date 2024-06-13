@@ -6,9 +6,9 @@ from threading import Thread
 import signal
 import sys
 
-# MONGO_IP = 'mongo-service'
-# BROKER_IP = 'mosquitto-service'
-MONGO_IP = BROKER_IP = '10.141.10.72'
+MONGO_IP = 'mongo-service'
+BROKER_IP = 'mosquitto-service'
+# MONGO_IP = BROKER_IP = '10.141.10.72'
 
 
 def signal_handler(sig, frame):
@@ -25,10 +25,10 @@ if __name__ == "__main__":
     # "settings": {"data_rate": {"lora": {"bandwidth": 125000, "spreading_factor": 7}}, "frequency": "868000000"},
     # "dev_EUI": "70B3D57ED0063437", "received_at": "2024-05-10T10:56:38.669"}"""
 
-    # database_addr = f"{MONGO_IP}:27017"
-    # broker_addr = {"ip": BROKER_IP, "port": 1883}
-    database_addr = f"{MONGO_IP}:32717"
-    broker_addr = {"ip": BROKER_IP, "port": 31111}
+    database_addr = f"{MONGO_IP}:27017"
+    broker_addr = {"ip": BROKER_IP, "port": 1883}
+    # database_addr = f"{MONGO_IP}:32717"
+    # broker_addr = {"ip": BROKER_IP, "port": 31111}
     http_port = 5000
 
     database_base = "data_db"
