@@ -160,6 +160,12 @@ spec:
     port: 5000
     targetPort: 5000
     nodePort: 30002
+    name: http
+  - protocol: TCP
+    port: 1935
+    targetPort: 1935
+    nodePort: 31935
+    name: rtsp
   type: NodePort
 
 ---
