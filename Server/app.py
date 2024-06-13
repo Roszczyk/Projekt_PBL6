@@ -367,9 +367,10 @@ def post_data(device_id, cmd):
     except ValueError:
         return jsonify({'message': 'Invalid value. A boolean is required.'}), 400
 
-    last_value = mongo.db.commands.find_one({cmd: EXIST, "device_id": device_id}, sort=DESC)[cmd]
-    if value == last_value:
-        print("Last value:", last_value)
+    last_value = mongo.db.commands.find_one({cmd: EXIST, "device_id": device_id}, sort=DESC)
+
+    if last_value and value == last_value[cmd]:
+        print("Last value:", last_value[cmd])
         return jsonify({'message': 'Data already up to date.'}), 200
 
     result_dict = Command(device_id=device_id, timestamp=datetime.now(), **{cmd: value}).__dict__
