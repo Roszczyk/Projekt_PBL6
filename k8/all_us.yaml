@@ -160,6 +160,10 @@ spec:
     port: 5000
     targetPort: 5000
     nodePort: 30002
+  - protocol: TCP
+    port: 1935
+    targetPort: 1935
+    nodePort: 31935
   type: NodePort
 
 ---

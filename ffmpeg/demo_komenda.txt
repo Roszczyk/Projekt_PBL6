@@ -4,6 +4,11 @@ ffmpeg -re -stream_loop -1 -i ./ffmpeg/Sample_hornet.mp4  \
     -acodec aac \
     -f flv rtmp://10.141.10.69/live
 
+ffmpeg -re -stream_loop -1 -i ./ffmpeg/Sample_hornet.mp4  \
+    -vcodec libx264 -preset:v ultrafast \
+    -acodec aac \
+    -f flv rtmp://10.141.10.72/live
+
 KAMERA
 ffmpeg -f v4l2 -i /dev/video0  \
     -vcodec libx264 -preset:v ultrafast \
