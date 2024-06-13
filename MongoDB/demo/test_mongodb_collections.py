@@ -16,13 +16,9 @@ def test_mongodb():
         db = client[mongo_db]
         collection = db[mongo_collection]
 
-        # Insert a document
-        document = {"test_key": "test_value"}
-        collection.insert_one(document)
-
-        # Read the inserted document
-        result = collection.find({"test_key": "test_value"})
-        print("Document retrieved:", result)
+        result = collection.find({})
+        documents = list(result)
+        print("Documents retrieved:", documents)
 
     except Exception as e:
         print("Error:", e)
