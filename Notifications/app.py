@@ -13,7 +13,7 @@ from websockets.http import Headers
 MYSQL_IP = 'mysql-service'
 MONGO_IP = 'mongo-service'
 
-AUTHORIZE_IP = 'authorize-service'
+AUTHORIZEUSER_IP = 'authorizeuser-service'
 
 app = Flask(__name__)
 app.config['MONGO_URI'] = f'mongodb://{MONGO_IP}:27017/data_db'
